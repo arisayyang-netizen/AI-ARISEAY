@@ -55,6 +55,7 @@ export const useChatStore = defineStore('chat', () => {
       if (dbSessions.length > 0) {
         sessions.value = dbSessions.map((session: any) => ({
           ...session,
+          id: String(session.id), // 确保ID为字符串类型
           createdAt: new Date(session.createdAt),
           updatedAt: new Date(session.updatedAt),
           messages: session.messages.map((msg: any) => ({
@@ -102,9 +103,15 @@ export const useChatStore = defineStore('chat', () => {
       for (const session of sessions.value) {
         if (!session.id) {
           const id = await DatabaseManager.saveChatSession(session)
-          session.id = id
+          session.id = String(id) // 确保ID为字符串类型
         } else {
-          await DatabaseManager.updateChatSession(Number(session.id), session)
+          // 确保sessionId是有效的数字
+          const numericId = Number(session.id)
+          if (isNaN(numericId)) {
+            console.error('无效的会话ID:', session.id)
+            continue
+          }
+          await DatabaseManager.updateChatSession(numericId, session)
         }
       }
     } catch (error) {
@@ -123,7 +130,7 @@ export const useChatStore = defineStore('chat', () => {
     
     try {
       const id = await DatabaseManager.saveChatSession(sessionData)
-      const session: ChatSession = { ...sessionData, id }
+      const session: ChatSession = { ...sessionData, id: String(id) } // 确保ID为字符串类型
       sessions.value.unshift(session)
       currentSessionId.value = session.id
       return session
@@ -135,7 +142,14 @@ export const useChatStore = defineStore('chat', () => {
 
   const deleteSession = async (sessionId: string) => {
     try {
-      await DatabaseManager.deleteChatSession(Number(sessionId))
+      // 确保sessionId是有效的数字
+      const numericId = Number(sessionId)
+      if (isNaN(numericId)) {
+        console.error('无效的会话ID:', sessionId)
+        return
+      }
+      
+      await DatabaseManager.deleteChatSession(numericId)
       
       const index = sessions.value.findIndex(session => session.id === sessionId)
       if (index !== -1) {
@@ -164,8 +178,14 @@ export const useChatStore = defineStore('chat', () => {
         updatedAt: new Date()
       }
       
-      // 确保将sessionId转换为数字类型
-      await DatabaseManager.updateChatSession(Number(sessionId), updatedData)
+      // 确保将sessionId转换为数字类型并验证
+      const numericId = Number(sessionId)
+      if (isNaN(numericId)) {
+        console.error('无效的会话ID:', sessionId)
+        return
+      }
+      
+      await DatabaseManager.updateChatSession(numericId, updatedData)
       
       const session = sessions.value.find(s => s.id === sessionId)
       if (session) {
@@ -185,7 +205,14 @@ export const useChatStore = defineStore('chat', () => {
         updatedAt: new Date()
       }
       
-      await DatabaseManager.updateChatSession(Number(sessionId), updatedData)
+      // 确保将sessionId转换为数字类型并验证
+      const numericId = Number(sessionId)
+      if (isNaN(numericId)) {
+        console.error('无效的会话ID:', sessionId)
+        return
+      }
+      
+      await DatabaseManager.updateChatSession(numericId, updatedData)
       
       const session = sessions.value.find(s => s.id === sessionId)
       if (session) {
@@ -285,8 +312,7 @@ export const useChatStore = defineStore('chat', () => {
     const originalSession = sessions.value.find(s => s.id === sessionId)
     if (!originalSession) return null
     
-    const duplicatedSession: ChatSession = {
-      id: nanoid(),
+    const duplicatedSessionData = {
       title: `${originalSession.title} - 副本`,
       messages: originalSession.messages.map(msg => ({
         ...msg,
@@ -297,9 +323,15 @@ export const useChatStore = defineStore('chat', () => {
       updatedAt: new Date()
     }
     
-    sessions.value.unshift(duplicatedSession)
-    await saveSessions()
-    return duplicatedSession
+    try {
+      const id = await DatabaseManager.saveChatSession(duplicatedSessionData)
+      const duplicatedSession: ChatSession = { ...duplicatedSessionData, id: String(id) }
+      sessions.value.unshift(duplicatedSession)
+      return duplicatedSession
+    } catch (error) {
+      console.error('复制会话失败:', error)
+      throw error
+    }
   }
 
   const searchSessions = async (query: string): Promise<ChatSession[]> => {

@@ -28,7 +28,7 @@
       <div v-if="!currentService" class="service-selection">
         <div class="selection-header">
           <h2>AI大爆炸 - 智能服务中心</h2>
-          <p>集成AI咨询、新闻动态等多种智能服务，为您提供全方位的AI体验</p>
+          <p>选择您需要的AI服务，开启智能对话体验</p>
         </div>
         
         <div class="services-grid">
@@ -36,166 +36,58 @@
             v-for="service in consultationServices" 
             :key="service.id"
             class="service-card"
-            :class="{ expanded: expandedServices.includes(service.id) }"
+            @click="selectService(service)"
           >
             <div class="service-icon">{{ service.icon }}</div>
             <h3 class="service-title">{{ service.title }}</h3>
             <p class="service-description">{{ service.description }}</p>
             
-            <!-- 基础功能标签 -->
             <div class="service-features">
-              <el-tag 
-                v-for="feature in service.features.slice(0, 3)" 
-                :key="feature"
-                size="small"
-                class="feature-tag"
-              >
-                {{ feature }}
-              </el-tag>
-              <el-tag 
-                v-if="service.features.length > 3"
-                size="small"
-                class="feature-tag more-tag"
-                @click.stop="toggleServiceExpansion(service.id)"
-              >
-                +{{ service.features.length - 3 }}更多
-              </el-tag>
-            </div>
-            
-            <!-- 展开的详细内容 -->
-            <div v-if="expandedServices.includes(service.id)" class="service-expanded">
-              <div class="expanded-features">
-                <h4>完整功能列表：</h4>
-                <div class="all-features">
-                  <el-tag 
-                    v-for="feature in service.features" 
-                    :key="feature"
-                    size="small"
-                    class="feature-tag"
-                  >
-                    {{ feature }}
-                  </el-tag>
-                </div>
+              <div class="features-preview">
+                <span 
+                  v-for="(feature, index) in service.features.slice(0, 3)" 
+                  :key="index"
+                  class="feature-tag"
+                >
+                  {{ feature }}
+                </span>
               </div>
-              
-              <div class="quick-actions" v-if="service.quickActions">
-                <h4>快速操作：</h4>
-                <div class="action-buttons">
-                  <el-button 
-                    v-for="action in service.quickActions" 
-                    :key="action"
-                    size="small"
-                    type="info"
-                    plain
-                    @click.stop="handleQuickAction(service, action)"
-                  >
-                    {{ action }}
-                  </el-button>
-                </div>
-              </div>
-              
-              <div class="service-prompt" v-if="service.systemPrompt">
-                <h4>服务说明：</h4>
-                <p class="prompt-text">{{ service.systemPrompt.substring(0, 200) }}...</p>
-              </div>
-            </div>
-            
-            <div class="service-actions">
-              <el-button 
-                type="primary" 
-                size="large"
-                @click="selectService(service)"
-              >
-                开始咨询
-                <el-icon><ArrowRight /></el-icon>
-              </el-button>
-              <el-button 
-                size="large"
-                @click.stop="toggleServiceExpansion(service.id)"
-                class="expand-btn"
-              >
-                {{ expandedServices.includes(service.id) ? '收起' : '详情' }}
-                <el-icon><ArrowRight v-if="!expandedServices.includes(service.id)" /><ArrowLeft v-else /></el-icon>
-              </el-button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 咨询对话区域 -->
-      <div v-else class="consultation-chat">
-        <div class="chat-container">
-          <!-- 对话历史 -->
-          <div class="chat-messages" ref="messagesContainer">
-            <div 
-              v-for="message in currentMessages" 
-              :key="message.id"
-              :class="['message', message.role]"
-            >
-              <div class="message-avatar">
-                <span v-if="message.role === 'user'">👤</span>
-                <span v-else>{{ currentService.icon }}</span>
-              </div>
-              <div class="message-content">
-                <div class="message-text" v-html="formatMessage(message.content)"></div>
-                <div class="message-time">{{ formatTime(message.timestamp) }}</div>
-              </div>
-            </div>
-            
-            <!-- AI正在输入提示 -->
-            <div v-if="isAITyping" class="message assistant typing">
-              <div class="message-avatar">
-                <span>{{ currentService.icon }}</span>
-              </div>
-              <div class="message-content">
-                <div class="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 输入区域 -->
-          <div class="chat-input-area">
-            <div class="input-container">
-              <el-input
-                v-model="userInput"
-                type="textarea"
-                :rows="3"
-                placeholder="请输入您的问题或需求..."
-                @keydown.ctrl.enter="sendMessage"
-                :disabled="isAITyping"
-                class="message-input"
-              />
-              <div class="input-actions">
-                <div class="input-tips">
-                  <span>Ctrl + Enter 发送</span>
-                </div>
-                <el-button 
-                  type="primary" 
-                  @click="sendMessage"
-                  :loading="isAITyping"
-                  :disabled="!userInput.trim()"
-                >
-                  发送
-                </el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 侧边栏 -->
-        <div class="chat-sidebar">
-          <div class="service-info">
-            <div class="service-header">
+      <!-- 聊天界面 -->
+      <div v-else class="chat-interface">
+        <!-- 服务信息区域 -->
+        <div class="service-info">
+          <div class="service-header">
+            <div class="service-meta">
               <div class="service-icon-large">{{ currentService.icon }}</div>
-              <h3>{{ currentService.title }}</h3>
+              <div class="service-details">
+                <h3>{{ currentService.title }}</h3>
+                <div class="service-actions">
+                  <el-button 
+                    size="small" 
+                    type="text" 
+                    @click="showServiceSelection"
+                    class="switch-service-btn"
+                  >
+                    切换服务
+                  </el-button>
+                  <el-button 
+                    size="small" 
+                    type="text" 
+                    @click="showEditAgentDialog = true"
+                    class="edit-agent-btn"
+                  >
+                    编辑智能体
+                  </el-button>
+                </div>
+              </div>
             </div>
             <p class="service-desc">{{ currentService.description }}</p>
-            <div v-if="chatStore.currentSession && chatStore.currentSession.agentDescription" class="agent-description">
-              <h4>智能体描述</h4>
+            <div v-if="chatStore.currentSession.agentDescription" class="agent-description">
               <p>{{ chatStore.currentSession.agentDescription }}</p>
             </div>
           </div>
@@ -207,401 +99,324 @@
                 v-for="action in currentService.quickActions" 
                 :key="action"
                 size="small"
+                type="text"
                 @click="insertQuickAction(action)"
               >
                 {{ action }}
               </el-button>
             </div>
           </div>
+        </div>
 
-          <div class="session-actions">
-            <el-button @click="clearChat" type="danger" plain>
-              清空对话
-            </el-button>
-            <el-button @click="exportChat" plain>
-              导出对话
-            </el-button>
-            <el-button @click="editAgentDescription" plain>
-              编辑智能体描述
-            </el-button>
-            <el-button @click="switchService" plain>
-              切换服务
-            </el-button>
+        <!-- 聊天消息区域 -->
+        <div class="chat-messages" ref="messagesContainer">
+          <div v-if="chatStore.currentSession.messages.length === 0" class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3>开始对话</h3>
+            <p>向AI助手提问，获得专业的回答和建议</p>
+          </div>
+          
+          <div 
+            v-for="message in chatStore.currentSession.messages" 
+            :key="message.id"
+            class="message-item"
+            :class="{ 'user-message': message.role === 'user', 'assistant-message': message.role === 'assistant' }"
+          >
+            <div class="message-avatar">
+              <div v-if="message.role === 'user'" class="user-avatar">
+                <el-icon><User /></el-icon>
+              </div>
+              <div v-else class="assistant-avatar">
+                {{ currentService.icon }}
+              </div>
+            </div>
+            
+            <div class="message-content">
+              <div class="message-text" v-html="formatMessage(message.content)"></div>
+              <div class="message-time">{{ formatTimeAgo(message.timestamp) }}</div>
+            </div>
+          </div>
+          
+          <div v-if="isLoading" class="message-item assistant-message loading">
+            <div class="message-avatar">
+              <div class="assistant-avatar">{{ currentService.icon }}</div>
+            </div>
+            <div class="message-content">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- 输入区域 -->
+        <div class="chat-input-area">
+          <div class="input-container">
+            <el-input
+              v-model="inputMessage"
+              type="textarea"
+              :rows="1"
+              placeholder="输入您的问题..."
+              class="message-input"
+              @keydown.enter.prevent="handleEnterKey"
+              @input="adjustTextareaHeight"
+              ref="messageInput"
+            />
+            <div class="input-actions">
+              <el-button 
+                type="text" 
+                @click="clearChat"
+                class="clear-btn"
+                :disabled="chatStore.currentSession.messages.length === 0"
+              >
+                <el-icon><Delete /></el-icon>
+              </el-button>
+              <el-button 
+                type="primary" 
+                @click="sendMessage"
+                :loading="isLoading"
+                :disabled="!inputMessage.trim()"
+                class="send-btn"
+              >
+                <el-icon><Promotion /></el-icon>
+                发送
+              </el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 编辑智能体描述对话框 -->
+        <el-dialog
+          v-model="showEditAgentDialog"
+          title="编辑智能体描述"
+          width="500px"
+        >
+          <el-input
+            v-model="tempAgentDescription"
+            type="textarea"
+            :rows="4"
+            placeholder="请输入智能体描述..."
+          />
+          <template #footer>
+            <el-button @click="showEditAgentDialog = false">取消</el-button>
+            <el-button type="primary" @click="saveAgentDescription">保存</el-button>
+          </template>
+        </el-dialog>
       </div>
     </div>
   </div>
-
-  <!-- 编辑智能体描述对话框 -->
-  <el-dialog v-model="showDescriptionDialog" title="编辑智能体描述" width="500px">
-    <el-input
-      v-model="editingDescription"
-      type="textarea"
-      :rows="5"
-      placeholder="请输入智能体描述..."
-      maxlength="200"
-      show-word-limit
-    />
-    
-    <template #footer>
-      <el-button @click="showDescriptionDialog = false">取消</el-button>
-      <el-button 
-        type="primary" 
-        @click="saveDescription"
-      >
-        保存
-      </el-button>
-    </template>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
-import { useAIStore } from '@/stores/ai'
+import { ArrowLeft, User, Delete, Promotion } from '@element-plus/icons-vue'
 import { useChatStore } from '@/stores/chat'
-import { marked } from 'marked'
+import { consultationServices } from '@/config/consultationServices'
 
 const router = useRouter()
-const aiStore = useAIStore()
 const chatStore = useChatStore()
 
 // 响应式数据
 const currentService = ref(null)
-const currentMessages = ref([])
-const userInput = ref('')
-const isAITyping = ref(false)
+const inputMessage = ref('')
+const isLoading = ref(false)
 const messagesContainer = ref(null)
-const expandedServices = ref([]) // 展开的服务ID列表
-const showDescriptionDialog = ref(false)
-const editingDescription = ref('')
+const messageInput = ref(null)
+const showEditAgentDialog = ref(false)
+const tempAgentDescription = ref('')
 
-// 咨询服务配置
-const consultationServices = ref([
-  {
-    id: 'writing',
-    title: '智能写作助手',
-    icon: '✍️',
-    description: '基于最新GPT-4模型，提供专业文档撰写和内容优化服务',
-    features: ['文档撰写', '内容优化', '语法检查', '风格调整'],
-    quickActions: ['帮我写一份报告', '优化这段文字', '检查语法错误', '调整写作风格'],
-    systemPrompt: '你是一个专业的写作助手，擅长各类文档撰写、内容优化和语言润色。请用专业、友好的语调帮助用户解决写作相关问题。'
-  },
-  {
-    id: 'coding',
-    title: '代码分析优化',
-    icon: '🔧',
-    description: '利用Claude 3.5先进算法，深度分析代码质量并提供优化方案',
-    features: ['代码审查', '性能优化', '架构建议', '最佳实践'],
-    quickActions: ['分析这段代码', '优化性能', '重构建议', '修复bug'],
-    systemPrompt: '你是一个资深的软件工程师和代码审查专家，擅长代码分析、性能优化和架构设计。请提供专业的技术建议和解决方案。'
-  },
-  {
-    id: 'learning',
-    title: '学习规划师',
-    icon: '📚',
-    description: '个性化学习路径规划，提供高效的学习方法和资源推荐',
-    features: ['学习规划', '资源推荐', '进度跟踪', '方法指导'],
-    quickActions: ['制定学习计划', '推荐学习资源', '学习方法建议', '进度评估'],
-    systemPrompt: '你是一个专业的学习顾问和教育专家，擅长制定个性化学习计划和提供学习方法指导。请根据用户需求提供实用的学习建议。'
-  },
-  {
-    id: 'business',
-    title: '商业分析师',
-    icon: '📊',
-    description: '商业策略分析，市场研究和商业计划制定支持',
-    features: ['市场分析', '策略规划', '数据分析', '商业建议'],
-    quickActions: ['市场分析', '竞品研究', '商业计划', '数据解读'],
-    systemPrompt: '你是一个经验丰富的商业分析师和战略顾问，擅长市场分析、商业策略制定和数据解读。请提供专业的商业建议和分析。'
-  },
-  {
-    id: 'news',
-    title: 'AI新闻动态',
-    icon: '📰',
-    description: '获取最新的AI行业动态、技术趋势和重要新闻资讯',
-    features: ['行业动态', '技术趋势', '产品发布', '政策解读'],
-    quickActions: ['最新AI新闻', '技术趋势分析', '行业报告', '政策动态'],
-    systemPrompt: '你是一个专业的AI行业分析师和新闻解读专家，擅长分析AI行业动态、技术趋势和政策变化。请提供准确、及时的行业资讯和深度分析。'
-  }
-])
-
-// 方法
+// 返回上一页
 const goBack = () => {
-  router.push('/')
+  router.back()
 }
 
-const selectService = async (service) => {
-  currentService.value = service;
+// 选择服务
+const selectService = (service) => {
+  currentService.value = service
+  chatStore.setCurrentService(service)
   
-  // 查找是否有与该服务关联的会话
-  let sessionFound = false;
+  // 创建新的聊天会话
+  const sessionId = Date.now().toString()
+  chatStore.createSession(sessionId, service.title)
   
-  // 加载所有会话
-  if (chatStore.sessions.length === 0) {
-    await chatStore.loadSessions();
-  }
-  
-  // 查找与该服务关联的会话
-  for (const session of chatStore.sessions) {
-    const serviceId = localStorage.getItem(`ai-consultation-service-${session.id}`);
-    if (serviceId === service.id) {
-      // 找到关联会话，设置为当前会话
-      chatStore.currentSessionId = session.id;
-      currentMessages.value = session.messages;
-      sessionFound = true;
-      ElMessage.success('已恢复之前的对话');
-      break;
-    }
-  }
-  
-  // 如果没有找到关联会话，创建新会话
-  if (!sessionFound) {
-    await createNewSession(service);
-  }
+  nextTick(() => {
+    scrollToBottom()
+  })
 }
 
-// 创建新会话
-const createNewSession = async (service) => {
-  try {
-    // 使用chatStore创建新会话
-    const session = await chatStore.createSession(`${service.title}会话`);
-    
-    // 添加初始消息
-    const welcomeMessage = {
-      id: Date.now().toString(),
-      role: 'assistant',
-      content: `您好！我是${service.title}，很高兴为您服务。${service.description}\n\n请告诉我您需要什么帮助？`,
-      timestamp: new Date().toISOString()
-    };
-    
-    // 更新会话消息
-    session.messages = [welcomeMessage];
-    await chatStore.saveSessions();
-    
-    // 设置当前会话
-    chatStore.currentSessionId = session.id;
-    currentMessages.value = session.messages;
-    
-    // 保存服务信息到localStorage，以便后续识别
-    localStorage.setItem(`ai-consultation-service-${session.id}`, service.id);
-  } catch (error) {
-    console.error('创建会话失败:', error);
-    ElMessage.error('创建会话失败，请稍后重试');
-  }
-}
-
-const switchService = () => {
+// 显示服务选择
+const showServiceSelection = () => {
   currentService.value = null
-  currentMessages.value = []
-  userInput.value = ''
 }
 
-// 展开/收起服务详情
-const toggleServiceExpansion = (serviceId) => {
-  const index = expandedServices.value.indexOf(serviceId)
-  if (index > -1) {
-    expandedServices.value.splice(index, 1)
-  } else {
-    expandedServices.value.push(serviceId)
+// 发送消息
+const sendMessage = async () => {
+  if (!inputMessage.value.trim() || isLoading.value) return
+  
+  const message = inputMessage.value.trim()
+  inputMessage.value = ''
+  
+  // 添加用户消息
+  chatStore.addMessage({
+    id: Date.now().toString(),
+    role: 'user',
+    content: message,
+    timestamp: Date.now()
+  })
+  
+  isLoading.value = true
+  
+  try {
+    // 滚动到底部
+    await nextTick()
+    scrollToBottom()
+    
+    // 模拟AI回复
+    setTimeout(() => {
+      const aiResponse = generateAIResponse(message, currentService.value)
+      chatStore.addMessage({
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: Date.now()
+      })
+      
+      isLoading.value = false
+      nextTick(() => {
+        scrollToBottom()
+      })
+    }, 1000 + Math.random() * 2000)
+    
+  } catch (error) {
+    console.error('发送消息失败:', error)
+    ElMessage.error('发送消息失败，请重试')
+    isLoading.value = false
   }
 }
 
-// 处理快速操作
-const handleQuickAction = (service, action) => {
-  selectService(service)
-  userInput.value = action
+// 生成AI回复
+const generateAIResponse = (message, service) => {
+  const responses = {
+    'code-review': [
+      '我来帮您分析这段代码。首先，我注意到几个可以改进的地方...',
+      '从代码结构来看，建议您考虑以下优化方案...',
+      '这段代码的逻辑是正确的，但在性能和可维护性方面有一些建议...'
+    ],
+    'tech-consult': [
+      '基于您的技术需求，我推荐以下解决方案...',
+      '这个技术问题很有意思，让我为您详细分析一下...',
+      '从技术架构的角度来看，您可以考虑这样的实现方式...'
+    ],
+    'career-guide': [
+      '关于职业发展，我建议您从以下几个方面来规划...',
+      '根据当前的行业趋势，您的职业路径可以这样规划...',
+      '职业发展需要长期规划，让我为您分析一下当前的机会...'
+    ]
+  }
+  
+  const serviceResponses = responses[service?.id] || [
+    '感谢您的问题，让我来为您详细解答...',
+    '这是一个很好的问题，我来帮您分析一下...',
+    '根据您的描述，我建议您考虑以下几个方面...'
+  ]
+  
+  return serviceResponses[Math.floor(Math.random() * serviceResponses.length)]
+}
+
+// 处理回车键
+const handleEnterKey = (event) => {
+  if (event.shiftKey) {
+    return // Shift+Enter 换行
+  }
   sendMessage()
 }
 
-const sendMessage = async () => {
-  if (!userInput.value.trim() || isAITyping.value) return;
-
-  const userMessage = {
-    id: Date.now().toString(),
-    role: 'user',
-    content: userInput.value.trim(),
-    timestamp: new Date().toISOString()
-  };
-
-  // 添加用户消息到当前会话
-  currentMessages.value.push(userMessage);
-  const question = userInput.value.trim();
-  userInput.value = '';
-  
-  // 更新chatStore中的会话
-  if (chatStore.currentSession) {
-    chatStore.currentSession.messages = currentMessages.value;
-    await chatStore.saveSessions();
-  }
-  
-  // 滚动到底部
-  await nextTick();
-  scrollToBottom();
-
-  // 开始AI回复
-  isAITyping.value = true;
-
-  try {
-    // 构建对话上下文
-    const context = currentMessages.value
-      .slice(-10) // 只取最近10条消息作为上下文
-      .map(msg => `${msg.role === 'user' ? '用户' : 'AI'}: ${msg.content}`);
-    
-    // 添加系统提示
-    const prompt = `${currentService.value.systemPrompt}\n\n对话历史：\n${context.join('\n')}\n\n当前问题：${question}\n\n请基于你的专业角色和对话历史，为用户提供有帮助的回答。`;
-
-    const response = await aiStore.chatWithAI(prompt);
-    
-    const aiMessage = {
-      id: Date.now().toString(),
-      role: 'assistant',
-      content: response,
-      timestamp: new Date().toISOString()
-    };
-
-    // 添加AI回复到当前会话
-    currentMessages.value.push(aiMessage);
-    
-    // 更新chatStore中的会话
-    if (chatStore.currentSession) {
-      chatStore.currentSession.messages = currentMessages.value;
-      await chatStore.saveSessions();
-    }
-    
-    // 滚动到底部
-    await nextTick();
-    scrollToBottom();
-    
-  } catch (error) {
-    console.error('AI大爆炸失败:', error);
-    ElMessage.error('AI大爆炸失败，请稍后重试');
-    
-    const errorMessage = {
-      id: Date.now().toString(),
-      role: 'assistant',
-      content: '抱歉，我暂时无法回答您的问题，请稍后重试。',
-      timestamp: new Date().toISOString()
-    };
-    
-    currentMessages.value.push(errorMessage);
-    
-    // 更新chatStore中的会话
-    if (chatStore.currentSession) {
-      chatStore.currentSession.messages = currentMessages.value;
-      await chatStore.saveSessions();
-    }
-  } finally {
-    isAITyping.value = false;
-    await nextTick();
-    scrollToBottom();
-  }
-};
-
+// 插入快捷操作
 const insertQuickAction = (action) => {
-  userInput.value = action
-}
-
-const clearChat = async () => {
-  ElMessageBox.confirm('确定要清空当前对话吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    // 清空当前会话消息
-    if (chatStore.currentSession) {
-      // 保留第一条欢迎消息
-      const welcomeMessage = currentMessages.value[0];
-      chatStore.currentSession.messages = [welcomeMessage];
-      currentMessages.value = [welcomeMessage];
-      await chatStore.saveSessions();
-      ElMessage.success('对话已清空');
+  inputMessage.value = action
+  nextTick(() => {
+    if (messageInput.value) {
+      messageInput.value.focus()
     }
-  }).catch(() => {
-    // 用户取消操作
-  });
-};
-
-const exportChat = () => {
-  if (!currentMessages.value.length) return
-  
-  const chatData = {
-    service: currentService.value.title,
-    messages: currentMessages.value
-  }
-  
-  const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${currentService.value.title}-对话-${new Date().toLocaleDateString()}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  })
 }
 
-// 编辑智能体描述
-const editAgentDescription = () => {
-  if (!chatStore.currentSession) return
-  
-  editingDescription.value = chatStore.currentSession.agentDescription || ''
-  showDescriptionDialog.value = true
+// 清空聊天
+const clearChat = async () => {
+  try {
+    await ElMessageBox.confirm('确定要清空当前对话吗？', '确认清空', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    
+    chatStore.clearCurrentSession()
+    ElMessage.success('对话已清空')
+  } catch {
+    // 用户取消
+  }
 }
 
 // 保存智能体描述
-const saveDescription = async () => {
-  if (!chatStore.currentSession) return
-  
-  try {
-    await chatStore.updateSessionAgentDescription(chatStore.currentSession.id, editingDescription.value)
-    showDescriptionDialog.value = false
-    ElMessage.success('智能体描述已更新')
-  } catch (error) {
-    console.error('更新智能体描述失败:', error)
-    ElMessage.error('更新智能体描述失败')
-  }
+const saveAgentDescription = () => {
+  chatStore.updateSessionAgentDescription(tempAgentDescription.value)
+  showEditAgentDialog.value = false
+  ElMessage.success('智能体描述已保存')
 }
 
+// 格式化消息
 const formatMessage = (content) => {
-  return marked(content)
+  return content.replace(/\n/g, '<br>')
 }
 
-const formatTime = (timestamp) => {
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
+// 格式化时间
+const formatTimeAgo = (timestamp) => {
+  const now = Date.now()
+  const diff = now - timestamp
   
-  if (diff < 60000) {
-    return '刚刚'
-  } else if (diff < 3600000) {
-    return `${Math.floor(diff / 60000)}分钟前`
-  } else if (diff < 86400000) {
-    return `${Math.floor(diff / 3600000)}小时前`
-  } else {
-    return date.toLocaleDateString()
-  }
+  if (diff < 60000) return '刚刚'
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
+  return `${Math.floor(diff / 86400000)}天前`
 }
 
+// 滚动到底部
 const scrollToBottom = () => {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
   }
 }
 
-// 生命周期
-onMounted(() => {
-  // 检查是否有传入的服务ID
-  const serviceId = router.currentRoute.value.query.service
-  if (serviceId) {
-    const service = consultationServices.value.find(s => s.id === serviceId)
-    if (service) {
-      selectService(service)
+// 调整文本框高度
+const adjustTextareaHeight = () => {
+  nextTick(() => {
+    if (messageInput.value && messageInput.value.textarea) {
+      const textarea = messageInput.value.textarea
+      textarea.style.height = 'auto'
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'
     }
+  })
+}
+
+// 组件挂载
+onMounted(() => {
+  // 如果有当前服务，恢复状态
+  if (chatStore.currentService) {
+    currentService.value = chatStore.currentService
   }
+  
+  // 如果有当前会话的智能体描述，设置临时描述
+  if (chatStore.currentSession.agentDescription) {
+    tempAgentDescription.value = chatStore.currentSession.agentDescription
+  }
+  
+  nextTick(() => {
+    scrollToBottom()
+  })
 })
 </script>
 
@@ -611,21 +426,21 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
 }
 
 .consultation-header {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1rem 2rem;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -636,452 +451,560 @@ onMounted(() => {
 }
 
 .back-btn {
-  color: white;
-  font-size: 1rem;
+  color: #666;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
 }
 
 .page-title {
   font-size: 1.5rem;
   font-weight: 600;
+  color: #2c3e50;
   margin: 0;
 }
 
 .consultation-content {
   flex: 1;
-  overflow-y: auto;
-  padding: 2rem;
-  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* 服务选择区域 */
 .service-selection {
-  max-width: 1200px;
-  margin: 0 auto;
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
 }
 
 .selection-header {
   text-align: center;
   margin-bottom: 3rem;
+  color: white;
 }
 
 .selection-header h2 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .selection-header p {
   font-size: 1.1rem;
   opacity: 0.9;
+  margin: 0;
 }
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .service-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
   padding: 2rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .service-card:hover {
   transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.15);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 1);
 }
 
 .service-icon {
   font-size: 3rem;
-  margin-bottom: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .service-title {
   font-size: 1.5rem;
   font-weight: 600;
+  color: #2c3e50;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .service-description {
-  font-size: 1rem;
-  opacity: 0.9;
-  margin-bottom: 1.5rem;
+  color: #666;
   line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .service-features {
+  margin-top: 1.5rem;
+}
+
+.features-preview {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
-  margin-bottom: 1rem;
 }
 
 .feature-tag {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
-.more-tag {
-  background: rgba(255, 107, 107, 0.3) !important;
-  cursor: pointer;
+/* 聊天界面 */
+.chat-interface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.95);
+  margin: 1rem;
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.service-info {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 1.5rem;
+}
+
+.service-header {
+  margin-bottom: 1.5rem;
+}
+
+.service-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.service-icon-large {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+}
+
+.service-details h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.service-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.switch-service-btn,
+.edit-agent-btn {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 6px;
   transition: all 0.3s ease;
 }
 
-.more-tag:hover {
-  background: rgba(255, 107, 107, 0.5) !important;
-  transform: scale(1.05);
+.switch-service-btn:hover,
+.edit-agent-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
-/* 展开的服务详情 */
-.service-expanded {
-  margin: 1.5rem 0;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: left;
-  animation: expandIn 0.3s ease-out;
+.service-desc {
+  opacity: 0.9;
+  line-height: 1.5;
+  margin: 0;
 }
 
-@keyframes expandIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-    max-height: 0;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    max-height: 500px;
-  }
+.agent-description {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  border-left: 4px solid rgba(255, 255, 255, 0.3);
 }
 
-.service-card.expanded {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-5px);
+.agent-description p {
+  margin: 0;
+  font-style: italic;
+  opacity: 0.9;
 }
 
-.expanded-features h4,
-.quick-actions h4,
-.service-prompt h4 {
+.quick-actions h4 {
   font-size: 1rem;
   font-weight: 600;
-  margin: 0 0 0.8rem 0;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.all-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0;
+  opacity: 0.9;
 }
 
 .action-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 
-.prompt-text {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  opacity: 0.8;
-  margin: 0;
-}
-
-.service-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
-
-.expand-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.expand-btn:hover {
+.action-buttons .el-button {
   background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
 }
 
-.service-action {
-  margin-top: auto;
+.action-buttons .el-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
-/* 咨询对话区域 */
-.consultation-chat {
-  display: flex;
-  height: 100%;
-  gap: 2rem;
-}
-
-.chat-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-}
-
+/* 聊天消息区域 */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  background: #f8f9fa;
 }
 
-.message {
-  display: flex;
-  gap: 1rem;
-  max-width: 80%;
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
 }
 
-.message.user {
-  align-self: flex-end;
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.empty-state p {
+  opacity: 0.7;
+  margin: 0;
+}
+
+.message-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-message {
   flex-direction: row-reverse;
 }
 
 .message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
   flex-shrink: 0;
 }
 
-.message.user .message-avatar {
+.user-avatar {
+  width: 40px;
+  height: 40px;
   background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.assistant-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
 }
 
 .message-content {
   flex: 1;
+  max-width: 70%;
+}
+
+.user-message .message-content {
+  text-align: right;
 }
 
 .message-text {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 12px;
-  line-height: 1.6;
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
-.message.user .message-text {
-  background: rgba(255, 255, 255, 0.2);
+.user-message .message-text {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
 }
 
 .message-time {
   font-size: 0.8rem;
-  opacity: 0.7;
+  color: #999;
   margin-top: 0.5rem;
-  text-align: right;
+  padding: 0 1rem;
 }
 
-.message.assistant .message-time {
-  text-align: left;
+.loading .message-text {
+  padding: 1rem 1.5rem;
 }
 
-/* 输入提示动画 */
 .typing-indicator {
   display: flex;
   gap: 4px;
-  padding: 1rem;
+  align-items: center;
 }
 
 .typing-indicator span {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
+  background: #ccc;
   animation: typing 1.4s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
 
 @keyframes typing {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.4;
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
   }
-  30% {
-    transform: translateY(-10px);
+  40% {
+    transform: scale(1);
     opacity: 1;
   }
 }
 
+/* 输入区域 */
 .chat-input-area {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.5rem;
+  background: white;
+  border-top: 1px solid #eee;
 }
 
 .input-container {
   display: flex;
-  flex-direction: column;
   gap: 1rem;
+  align-items: flex-end;
+  max-width: 100%;
 }
 
 .message-input {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white;
+  flex: 1;
 }
 
 .message-input :deep(.el-textarea__inner) {
-  background: transparent;
-  border: none;
-  color: white;
+  border-radius: 20px;
+  border: 2px solid #eee;
+  padding: 12px 20px;
+  font-size: 1rem;
+  line-height: 1.5;
   resize: none;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  max-height: 120px;
 }
 
-.message-input :deep(.el-textarea__inner)::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+.message-input :deep(.el-textarea__inner):focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .input-actions {
   display: flex;
-  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.clear-btn {
+  color: #999;
+  padding: 12px;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
-.input-tips {
-  font-size: 0.8rem;
-  opacity: 0.7;
+.clear-btn:hover:not(:disabled) {
+  background: #f5f5f5;
+  color: #ff4757;
 }
 
-/* 侧边栏 */
-.chat-sidebar {
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.service-info {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.service-header {
-  margin-bottom: 1rem;
-}
-
-.service-icon-large {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.service-info h3 {
-  font-size: 1.2rem;
+.send-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 22px;
+  padding: 12px 24px;
+  height: 44px;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
 }
 
-.service-desc {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 1rem;
+.send-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-.agent-description {
-  margin-top: 1rem;
-  padding: 0.8rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.agent-description h4 {
-  font-size: 0.9rem;
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #fff;
-}
-
-.agent-description p {
-  font-size: 0.85rem;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.4;
-}
-
-.quick-actions {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.service-actions {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.action-buttons .el-button {
-  justify-content: flex-start;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.session-actions {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .consultation-chat {
-    flex-direction: column;
+  .consultation-header {
+    padding: 1rem;
   }
   
-  .chat-sidebar {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
+  .page-title {
+    font-size: 1.2rem;
+  }
+  
+  .service-selection {
+    padding: 1rem;
+  }
+  
+  .selection-header h2 {
+    font-size: 2rem;
   }
   
   .services-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .service-card {
+    padding: 1.5rem;
+  }
+  
+  .chat-interface {
+    margin: 0.5rem;
+    border-radius: 15px;
+  }
+  
+  .service-info {
+    padding: 1rem;
+  }
+  
+  .service-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .service-icon-large {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .chat-messages {
+    padding: 1rem;
+  }
+  
+  .message-content {
+    max-width: 85%;
+  }
+  
+  .chat-input-area {
+    padding: 1rem;
+  }
+  
+  .input-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .input-actions {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .selection-header h2 {
+    font-size: 1.8rem;
+  }
+  
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .service-card {
+    padding: 1rem;
+  }
+  
+  .service-icon {
+    font-size: 2.5rem;
+    height: 60px;
+  }
+  
+  .service-title {
+    font-size: 1.3rem;
   }
 }
 </style>
