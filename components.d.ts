@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AuroraBackground: typeof import('./src/components/AuroraBackground.vue')['default']
     AuroraBackgroundDemo: typeof import('./src/components/AuroraBackgroundDemo.vue')['default']
+    CalendarModule: typeof import('./src/components/modules/CalendarModule.vue')['default']
     ChatModule: typeof import('./src/components/modules/ChatModule.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
@@ -37,6 +38,7 @@ declare module 'vue' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     NotesModule: typeof import('./src/components/modules/NotesModule.vue')['default']
     PomodoroModule: typeof import('./src/components/PomodoroModule.vue')['default']

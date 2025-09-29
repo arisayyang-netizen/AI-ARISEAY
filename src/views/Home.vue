@@ -66,6 +66,16 @@
             <span class="tab-text">项目管理</span>
           </div>
           
+          <!-- 日历模块 -->
+          <div 
+            class="tab-item-compact" 
+            :class="{ active: activeModule === 'calendar' }"
+            @click="setActiveModule('calendar')"
+          >
+            <div class="tab-icon">📅</div>
+            <span class="tab-text">日历</span>
+          </div>
+          
           <!-- 分隔线 -->
           <div class="tab-divider"></div>
           
@@ -482,6 +492,76 @@
                 ></div>
               </div>
             </div>
+            
+            <!-- 功能模块卡片区域 -->
+            <div class="feature-modules-section">
+              <div class="section-header">
+                <h3 class="section-title">功能模块</h3>
+                <p class="section-subtitle">快速访问各种工具和功能</p>
+              </div>
+              
+              <div class="modules-grid">
+                <!-- 日历模块卡片 -->
+                <div class="module-card glass-card" @click="setActiveModule('calendar')">
+                  <div class="module-icon">📅</div>
+                  <div class="module-content">
+                    <h4 class="module-title">日历</h4>
+                    <p class="module-description">管理日程安排，查看重要事件</p>
+                  </div>
+                  <div class="module-arrow">→</div>
+                </div>
+                
+                <!-- AI记事本模块卡片 -->
+                <div class="module-card glass-card" @click="setActiveModule('notes')">
+                  <div class="module-icon">📝</div>
+                  <div class="module-content">
+                    <h4 class="module-title">AI记事本</h4>
+                    <p class="module-description">智能笔记管理，AI辅助写作</p>
+                  </div>
+                  <div class="module-arrow">→</div>
+                </div>
+                
+                <!-- 待办清单模块卡片 -->
+                <div class="module-card glass-card" @click="setActiveModule('todos')">
+                  <div class="module-icon">✅</div>
+                  <div class="module-content">
+                    <h4 class="module-title">待办清单</h4>
+                    <p class="module-description">任务管理，提升工作效率</p>
+                  </div>
+                  <div class="module-arrow">→</div>
+                </div>
+                
+                <!-- 番茄钟模块卡片 -->
+                <div class="module-card glass-card" @click="setActiveModule('pomodoro')">
+                  <div class="module-icon">🍅</div>
+                  <div class="module-content">
+                    <h4 class="module-title">番茄钟</h4>
+                    <p class="module-description">专注工作，合理安排休息时间</p>
+                  </div>
+                  <div class="module-arrow">→</div>
+                </div>
+                
+                <!-- 项目管理模块卡片 -->
+                <div class="module-card glass-card" @click="setActiveModule('project')">
+                  <div class="module-icon">📊</div>
+                  <div class="module-content">
+                    <h4 class="module-title">项目管理</h4>
+                    <p class="module-description">项目进度跟踪，团队协作</p>
+                  </div>
+                  <div class="module-arrow">→</div>
+                </div>
+                
+                <!-- 智能对话模块卡片 -->
+                <div class="module-card glass-card" @click="setActiveModule('chat')">
+                  <div class="module-icon">🤖</div>
+                  <div class="module-content">
+                    <h4 class="module-title">智能对话</h4>
+                    <p class="module-description">AI助手对话，获取智能建议</p>
+                  </div>
+                  <div class="module-arrow">→</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -509,6 +589,11 @@
       <div v-if="activeModule === 'project'" class="module-container">
         <ProjectManagement />
       </div>
+      
+      <!-- 日历模块 -->
+      <div v-if="activeModule === 'calendar'" class="module-container">
+        <CalendarModule />
+      </div>
     </main>
 
     <!-- 设置对话框 -->
@@ -531,6 +616,7 @@ import AIConsultation from '@/views/AIConsultation.vue'
 import NotesModule from '@/components/modules/NotesModule.vue'
 import ChatModule from '@/components/modules/ChatModule.vue'
 import TodosModule from '@/components/modules/TodosModule.vue'
+import CalendarModule from '@/components/modules/CalendarModule.vue'
 import PomodoroModule from '@/components/PomodoroModule.vue'
 import ProjectManagement from '@/components/ProjectManagement.vue'
 import Settings from '@/components/Settings.vue'
@@ -542,7 +628,7 @@ const router = useRouter()
 
 // 响应式数据
 const searchQuery = ref('')
-const activeModule = ref<'welcome' | 'consultation' | 'notes' | 'chat' | 'todos' | 'pomodoro' | 'project'>('welcome')
+const activeModule = ref<'welcome' | 'consultation' | 'notes' | 'chat' | 'todos' | 'pomodoro' | 'project' | 'calendar'>('welcome')
 const showSettings = ref(false)
 const logoClickCount = ref(0)
 const showTutorial = ref(false)
@@ -631,7 +717,7 @@ const toggleSidebar = () => {
   appStore.toggleSidebar()
 }
 
-const setActiveModule = (module: 'welcome' | 'consultation' | 'notes' | 'chat' | 'todos') => {
+const setActiveModule = (module: 'welcome' | 'consultation' | 'notes' | 'chat' | 'todos' | 'pomodoro' | 'project' | 'calendar') => {
   activeModule.value = module
 }
 
@@ -2027,6 +2113,108 @@ const loadAIConsultations = () => {
   100% {
     transform: translate(60px, 60px);
   }
+}
+
+/* 功能模块卡片区域 */
+.feature-modules-section {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg) 0;
+}
+
+.feature-modules-section .section-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.feature-modules-section .section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-modules-section .section-subtitle {
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.module-card {
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-height: 80px;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-neon);
+}
+
+.module-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-glass);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.module-content {
+  flex: 1;
+}
+
+.module-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.module-description {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+.module-arrow {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  opacity: 0.6;
+  transition: var(--transition-base);
+  flex-shrink: 0;
+}
+
+.module-card:hover .module-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.module-card:hover .module-icon {
+  background: var(--bg-cyber);
+  border-color: var(--border-neon);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
 }
 
 /* 玻璃态效果 */
