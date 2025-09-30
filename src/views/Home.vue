@@ -4209,22 +4209,22 @@ const loadAIConsultations = () => {
   color: var(--text-tertiary);
 }
 
-/* AI大爆炸区域 */
+/* AI大爆炸区域 - 缩小面积 */
 .ai-consultations {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md); /* 从 xl 改为 md，减少内边距 */
 }
 
 .consultations-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm); /* 从 md 改为 sm，减少间距 */
 }
 
 .consultation-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  gap: var(--spacing-sm); /* 从 md 改为 sm，减少间距 */
+  padding: var(--spacing-sm); /* 从 md 改为 sm，减少内边距 */
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -4239,9 +4239,9 @@ const loadAIConsultations = () => {
 }
 
 .consultation-icon {
-  font-size: 1.5rem;
-  width: 40px;
-  height: 40px;
+  font-size: 1.2rem; /* 从 1.5rem 改为 1.2rem，缩小图标 */
+  width: 32px; /* 从 40px 改为 32px，缩小尺寸 */
+  height: 32px; /* 从 40px 改为 32px，缩小尺寸 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4258,10 +4258,11 @@ const loadAIConsultations = () => {
   font-weight: 600;
   margin-bottom: var(--spacing-xs);
   color: var(--text-inverse);
+  font-size: 0.95rem; /* 缩小标题字体 */
 }
 
 .consultation-desc {
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* 从 0.9rem 改为 0.85rem，缩小描述字体 */
   color: var(--text-tertiary);
   line-height: 1.4;
 }

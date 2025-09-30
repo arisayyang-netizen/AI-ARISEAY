@@ -1,138 +1,287 @@
 <template>
   <div class="project-management">
+    <!-- 顶部导航栏 -->
     <div class="project-header">
-      <h3 class="module-title">📊 项目管理</h3>
-      <div class="view-controls">
-        <el-radio-group v-model="currentView" size="small">
-          <el-radio-button label="table">表格视图</el-radio-button>
-          <el-radio-button label="gantt">甘特图</el-radio-button>
-        </el-radio-group>
+      <div class="header-left">
+        <div class="module-icon">📊</div>
+        <h3 class="module-title">项目管理</h3>
+        <div class="project-stats">
+          <span class="stat-item">
+            <span class="stat-number">{{ projects.length }}</span>
+            <span class="stat-label">项目</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-number">{{ totalTasks }}</span>
+            <span class="stat-label">任务</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-number">{{ completedTasks }}</span>
+            <span class="stat-label">已完成</span>
+          </span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="view-controls">
+          <el-radio-group v-model="currentView" size="default" class="modern-radio-group">
+            <el-radio-button label="table">
+              <el-icon><Grid /></el-icon>
+              <span>表格视图</span>
+            </el-radio-button>
+            <el-radio-button label="gantt">
+              <el-icon><TrendCharts /></el-icon>
+              <span>甘特图</span>
+            </el-radio-button>
+          </el-radio-group>
+        </div>
       </div>
     </div>
     
-    <!-- 项目选择器 -->
-    <div class="project-selector">
-      <el-select v-model="currentProject" placeholder="选择项目" size="small">
-        <el-option 
-          v-for="project in projects" 
-          :key="project.id" 
-          :label="project.name" 
-          :value="project.id" 
-        />
-      </el-select>
-      <el-button type="primary" size="small" @click="showNewProjectDialog = true">新建项目</el-button>
-    </div>
-    
-    <!-- 表格视图 -->
-    <div v-if="currentView === 'table'" class="table-view">
-      <el-table :data="currentTasks" style="width: 100%" size="small">
-        <el-table-column prop="name" label="任务名称" min-width="120">
-          <template #default="{ row }">
-            <el-input 
-              v-if="row.editing" 
-              v-model="row.name" 
-              size="small" 
-              @blur="saveTask(row)"
-            />
-            <span v-else @dblclick="startEditing(row)">{{ row.name }}</span>
+    <!-- 项目选择器和操作栏 -->
+    <div class="project-toolbar">
+      <div class="toolbar-left">
+        <el-select 
+          v-model="currentProject" 
+          placeholder="选择项目" 
+          size="default"
+          class="project-selector-modern"
+          clearable
+          filterable
+        >
+          <template #prefix>
+            <el-icon><Folder /></el-icon>
           </template>
-        </el-table-column>
+          <el-option 
+            v-for="project in projects" 
+            :key="project.id" 
+            :label="project.name" 
+            :value="project.id"
+          >
+            <div class="project-option">
+              <span class="project-name">{{ project.name }}</span>
+              <span class="project-task-count">{{ getProjectTaskCount(project.id) }} 任务</span>
+            </div>
+          </el-option>
+        </el-select>
         
-        <el-table-column prop="status" label="状态" width="120">
-          <template #default="{ row }">
-            <el-select 
-              v-model="row.status" 
-              size="small" 
-              @change="saveTask(row)"
+        <div class="quick-filters">
+          <el-button-group class="filter-group">
+            <el-button 
+              :type="statusFilter === 'all' ? 'primary' : ''" 
+              @click="statusFilter = 'all'"
+              size="default"
             >
-              <el-option label="未开始" value="not_started" />
-              <el-option label="进行中" value="in_progress" />
-              <el-option label="已完成" value="completed" />
-              <el-option label="已延期" value="delayed" />
-            </el-select>
-          </template>
-        </el-table-column>
-        
-        <el-table-column prop="priority" label="优先级" width="100">
-          <template #default="{ row }">
-            <el-select 
-              v-model="row.priority" 
-              size="small" 
-              @change="saveTask(row)"
+              全部
+            </el-button>
+            <el-button 
+              :type="statusFilter === 'in_progress' ? 'primary' : ''" 
+              @click="statusFilter = 'in_progress'"
+              size="default"
             >
-              <el-option label="低" value="low" />
-              <el-option label="中" value="medium" />
-              <el-option label="高" value="high" />
-            </el-select>
-          </template>
-        </el-table-column>
-        
-        <el-table-column label="开始日期" width="120">
-          <template #default="{ row }">
-            <el-date-picker
-              v-model="row.startDate"
-              type="date"
-              placeholder="选择日期"
-              format="YYYY-MM-DD"
-              size="small"
-              @change="saveTask(row)"
-            />
-          </template>
-        </el-table-column>
-        
-        <el-table-column label="结束日期" width="120">
-          <template #default="{ row }">
-            <el-date-picker
-              v-model="row.endDate"
-              type="date"
-              placeholder="选择日期"
-              format="YYYY-MM-DD"
-              size="small"
-              @change="saveTask(row)"
-            />
-          </template>
-        </el-table-column>
-        
-        <el-table-column label="进度" width="120">
-          <template #default="{ row }">
-            <el-progress 
-              :percentage="row.progress" 
-              :status="getProgressStatus(row)"
-            />
-          </template>
-        </el-table-column>
-        
-        <el-table-column label="操作" width="120" fixed="right">
-          <template #default="{ row }">
-            <el-button-group>
-              <el-button 
-                type="primary" 
-                size="small" 
-                @click="editTaskProgress(row)"
-                title="更新进度"
-              >
-                <el-icon><Edit /></el-icon>
-              </el-button>
-              <el-button 
-                type="danger" 
-                size="small" 
-                @click="deleteTask(row)"
-                title="删除任务"
-              >
-                <el-icon><Delete /></el-icon>
-              </el-button>
-            </el-button-group>
-          </template>
-        </el-table-column>
-      </el-table>
+              进行中
+            </el-button>
+            <el-button 
+              :type="statusFilter === 'delayed' ? 'primary' : ''" 
+              @click="statusFilter = 'delayed'"
+              size="default"
+            >
+              延期
+            </el-button>
+          </el-button-group>
+        </div>
+      </div>
       
-      <div class="add-task-row">
-        <el-button type="primary" @click="showNewTaskDialog = true" size="small">
-          <el-icon><Plus /></el-icon> 添加任务
+      <div class="toolbar-right">
+        <el-button type="primary" @click="showNewProjectDialog = true" size="default" class="create-btn">
+          <el-icon><Plus /></el-icon>
+          新建项目
         </el-button>
       </div>
     </div>
     
+    <!-- 表格视图 -->
+    <div v-if="currentView === 'table'" class="table-view">
+      <div class="table-container">
+        <el-table 
+          :data="filteredTasks" 
+          style="width: 100%" 
+          size="default"
+          class="modern-table"
+          :header-cell-style="{ background: 'var(--el-fill-color-lighter)', fontWeight: '600' }"
+          stripe
+        >
+          <el-table-column prop="name" label="任务名称" min-width="180">
+            <template #default="{ row }">
+              <div class="task-cell">
+                <div class="task-priority-indicator" :class="`priority-${row.priority}`"></div>
+                <el-input 
+                  v-if="row.editing" 
+                  v-model="row.name" 
+                  size="default" 
+                  @blur="saveTask(row)"
+                  @keyup.enter="saveTask(row)"
+                />
+                <div v-else @dblclick="startEditing(row)" class="task-name-display">
+                  <span class="task-title">{{ row.name }}</span>
+                  <el-icon class="edit-hint"><Edit /></el-icon>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          
+          <el-table-column prop="status" label="状态" width="140">
+            <template #default="{ row }">
+              <el-select 
+                v-model="row.status" 
+                size="default" 
+                @change="saveTask(row)"
+                class="status-select"
+              >
+                <el-option label="未开始" value="not_started">
+                  <div class="status-option">
+                    <div class="status-dot status-not-started"></div>
+                    <span>未开始</span>
+                  </div>
+                </el-option>
+                <el-option label="进行中" value="in_progress">
+                  <div class="status-option">
+                    <div class="status-dot status-in-progress"></div>
+                    <span>进行中</span>
+                  </div>
+                </el-option>
+                <el-option label="已完成" value="completed">
+                  <div class="status-option">
+                    <div class="status-dot status-completed"></div>
+                    <span>已完成</span>
+                  </div>
+                </el-option>
+                <el-option label="已延期" value="delayed">
+                  <div class="status-option">
+                    <div class="status-dot status-delayed"></div>
+                    <span>已延期</span>
+                  </div>
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          
+          <el-table-column prop="priority" label="优先级" width="120">
+            <template #default="{ row }">
+              <el-select 
+                v-model="row.priority" 
+                size="default" 
+                @change="saveTask(row)"
+                class="priority-select"
+              >
+                <el-option label="低" value="low">
+                  <div class="priority-option">
+                    <div class="priority-indicator low"></div>
+                    <span>低</span>
+                  </div>
+                </el-option>
+                <el-option label="中" value="medium">
+                  <div class="priority-option">
+                    <div class="priority-indicator medium"></div>
+                    <span>中</span>
+                  </div>
+                </el-option>
+                <el-option label="高" value="high">
+                  <div class="priority-option">
+                    <div class="priority-indicator high"></div>
+                    <span>高</span>
+                  </div>
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          
+          <el-table-column label="开始日期" width="140">
+            <template #default="{ row }">
+              <el-date-picker
+                v-model="row.startDate"
+                type="date"
+                placeholder="选择日期"
+                format="MM-DD"
+                value-format="YYYY-MM-DD"
+                size="default"
+                @change="saveTask(row)"
+                class="date-picker-compact"
+              />
+            </template>
+          </el-table-column>
+          
+          <el-table-column label="结束日期" width="140">
+            <template #default="{ row }">
+              <el-date-picker
+                v-model="row.endDate"
+                type="date"
+                placeholder="选择日期"
+                format="MM-DD"
+                value-format="YYYY-MM-DD"
+                size="default"
+                @change="saveTask(row)"
+                class="date-picker-compact"
+              />
+            </template>
+          </el-table-column>
+          
+          <el-table-column label="进度" width="160">
+            <template #default="{ row }">
+              <div class="progress-cell">
+                <el-progress 
+                  :percentage="row.progress" 
+                  :status="getProgressStatus(row)"
+                  :stroke-width="8"
+                  class="task-progress"
+                />
+                <span class="progress-text">{{ row.progress }}%</span>
+              </div>
+            </template>
+          </el-table-column>
+          
+          <el-table-column label="操作" width="140" fixed="right">
+            <template #default="{ row }">
+              <div class="action-buttons">
+                <el-tooltip content="更新进度" placement="top">
+                  <el-button 
+                    type="primary" 
+                    size="small" 
+                    @click="editTaskProgress(row)"
+                    circle
+                    class="action-btn"
+                  >
+                    <el-icon><Edit /></el-icon>
+                  </el-button>
+                </el-tooltip>
+                <el-tooltip content="删除任务" placement="top">
+                  <el-button 
+                    type="danger" 
+                    size="small" 
+                    @click="deleteTask(row)"
+                    circle
+                    class="action-btn"
+                  >
+                    <el-icon><Delete /></el-icon>
+                  </el-button>
+                </el-tooltip>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      
+      <div class="add-task-section">
+        <el-button 
+          type="primary" 
+          @click="showNewTaskDialog = true" 
+          size="large"
+          class="add-task-btn"
+        >
+          <el-icon><Plus /></el-icon> 
+          添加新任务
+        </el-button>
+      </div>
+    </div>
+
     <!-- 甘特图视图 -->
 <div v-else-if="currentView === 'gantt'" class="gantt-view">
   <!-- 项目信息 -->
@@ -768,313 +917,441 @@ function getTaskBarStyle(task) {
     width: `${duration * 80 - 10}px`
   }
 }
+
+// 状态过滤器
+const statusFilter = ref('all')
+
+// 过滤后的任务
+const filteredTasks = computed(() => {
+  let filtered = currentTasks.value
+  
+  if (statusFilter.value !== 'all') {
+    filtered = filtered.filter(task => task.status === statusFilter.value)
+  }
+  
+  return filtered
+})
+
+// 统计数据
+const totalTasks = computed(() => tasks.value.length)
+const completedTasks = computed(() => tasks.value.filter(task => task.status === 'completed').length)
+
+// 获取项目任务数量
+function getProjectTaskCount(projectId) {
+  return tasks.value.filter(task => task.projectId === projectId).length
+}
 </script>
 
 <style scoped>
+/* 现代化样式优化 */
 .project-management {
-  padding: 15px;
-  background-color: var(--el-bg-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   height: 100%;
   overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .project-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.module-icon {
+  font-size: 28px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .module-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.project-selector {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.project-selector .el-select {
-  flex: 1;
-}
-
-.add-task-row {
-  margin-top: 15px;
-  display: flex;
-  justify-content: center;
-}
-
-/* 甘特图样式 */
-.gantt-view {
-  margin-top: 20px;
-  overflow-x: auto;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-/* 项目信息样式 */
-.project-info {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.project-name {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--el-text-color-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.project-date-range {
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-  background-color: rgba(0, 0, 0, 0.03);
-  padding: 4px 12px;
-  border-radius: 20px;
+.project-stats {
+  display: flex;
+  gap: 24px;
 }
 
-.gantt-container {
-  min-width: 100%;
+.stat-item {
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  background-color: var(--el-bg-color);
-}
-
-.gantt-header {
-  display: flex;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.01));
-}
-
-.gantt-task-info {
-  width: 200px;
-  min-width: 200px;
-  padding: 12px 16px;
-  font-weight: bold;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
   align-items: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.task-header-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  line-height: 1;
 }
 
-.gantt-timeline-header {
-  display: flex;
-  flex: 1;
-}
-
-.gantt-day {
-  width: 80px;
-  min-width: 80px;
-  padding: 8px 4px;
-  text-align: center;
-  border-right: 1px solid rgba(0, 0, 0, 0.03);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: background-color 0.3s;
-}
-
-.gantt-day.weekend {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.day-number {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-
-.day-name {
+.stat-label {
   font-size: 12px;
   color: var(--el-text-color-secondary);
   margin-top: 2px;
-}
-
-.gantt-body {
-  display: flex;
-  flex-direction: column;
-}
-
-.gantt-row {
-  display: flex;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-  height: 60px;
-  transition: background-color 0.2s;
-}
-
-.gantt-row:hover {
-  background-color: rgba(0, 0, 0, 0.01);
-}
-
-.gantt-task-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 8px 16px;
-}
-
-.task-name {
   font-weight: 500;
-  margin-bottom: 4px;
-  color: var(--el-text-color-primary);
 }
 
-.task-dates {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
+.modern-radio-group {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.task-date {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+.modern-radio-group .el-radio-button__inner {
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.task-date-separator {
-  margin: 0 4px;
-  opacity: 0.5;
+.modern-radio-group .el-radio-button__original-radio:checked + .el-radio-button__inner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
-.gantt-timeline {
-  position: relative;
-  flex: 1;
-  display: flex;
-}
-
-.gantt-bar {
-  position: absolute;
-  height: 32px;
-  top: 14px;
-  border-radius: 16px;
-  padding: 0;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.bar-content {
-  padding: 0 12px;
+.project-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.bar-title {
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.bar-progress {
-  font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
+.project-selector-modern {
+  min-width: 200px;
+}
+
+.project-selector-modern .el-input__wrapper {
   border-radius: 10px;
-  font-size: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.progress-indicator {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  background-color: rgba(255, 255, 255, 0.3);
-  transition: width 0.3s;
+.project-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.gantt-bar:hover {
+.project-name {
+  font-weight: 500;
+}
+
+.project-task-count {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.filter-group {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.filter-group .el-button {
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.filter-group .el-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.create-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.create-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
-/* 任务状态样式 */
-.status-not-started {
-  background: linear-gradient(135deg, #e6e6e6, #d0d0d0);
-  color: #606266;
+.table-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.status-in-progress {
-  background: linear-gradient(135deg, #409eff, #337ecc);
-  color: white;
+.modern-table {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.status-completed {
-  background: linear-gradient(135deg, #67c23a, #529b2e);
-  color: white;
+.modern-table .el-table__header-wrapper {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
 }
 
-.status-delayed {
-  background: linear-gradient(135deg, #f56c6c, #c45656);
-  color: white;
+.modern-table .el-table__row:hover {
+  background-color: rgba(102, 126, 234, 0.05);
+}
+
+.task-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-priority-indicator {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.task-priority-indicator.priority-high {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+}
+
+.task-priority-indicator.priority-medium {
+  background: linear-gradient(135deg, #feca57, #ff9ff3);
+}
+
+.task-priority-indicator.priority-low {
+  background: linear-gradient(135deg, #48dbfb, #0abde3);
+}
+
+.task-name-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.task-name-display:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.task-title {
+  font-weight: 500;
+}
+
+.edit-hint {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: var(--el-text-color-secondary);
+}
+
+.task-name-display:hover .edit-hint {
+  opacity: 1;
+}
+
+.status-select, .priority-select {
+  width: 100%;
+}
+
+.status-option, .priority-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.status-not-started {
+  background: #909399;
+}
+
+.status-dot.status-in-progress {
+  background: #409eff;
+}
+
+.status-dot.status-completed {
+  background: #67c23a;
+}
+
+.status-dot.status-delayed {
+  background: #f56c6c;
+}
+
+.priority-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.priority-indicator.low {
+  background: linear-gradient(135deg, #48dbfb, #0abde3);
+}
+
+.priority-indicator.medium {
+  background: linear-gradient(135deg, #feca57, #ff9ff3);
+}
+
+.priority-indicator.high {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+}
+
+.date-picker-compact .el-input__wrapper {
+  border-radius: 8px;
+}
+
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-progress {
+  flex: 1;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  min-width: 35px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.add-task-section {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.add-task-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.add-task-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 /* 深色模式适配 */
-.dark .gantt-view {
-  background: linear-gradient(135deg, rgba(30, 30, 30, 0.4), rgba(20, 20, 20, 0.2));
+.dark .project-management {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(20, 20, 20, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark .project-date-range {
-  background-color: rgba(255, 255, 255, 0.05);
+.dark .stat-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark .gantt-container {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.dark .project-toolbar {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark .gantt-header {
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+.dark .table-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark .gantt-day.weekend {
-  background-color: rgba(255, 255, 255, 0.02);
+.dark .modern-table .el-table__header-wrapper {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
 }
 
-.dark .gantt-row:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+.dark .task-name-display:hover {
+  background: rgba(102, 126, 234, 0.2);
 }
 
-/* 优先级样式 */
-.priority-high.status-not-started {
-  border-left: 4px solid #f56c6c;
-}
-
-.priority-medium.status-not-started {
-  border-left: 4px solid #e6a23c;
-}
-
-.priority-low.status-not-started {
-  border-left: 4px solid #909399;
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .project-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .project-stats {
+    gap: 12px;
+  }
+  
+  .project-toolbar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .toolbar-left {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 </style>

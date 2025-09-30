@@ -401,7 +401,7 @@ const closeTutorial = () => {
 
 .step-indicator.active {
   background: var(--primary-color);
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
 }
 
 @keyframes fadeIn {

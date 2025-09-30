@@ -57,6 +57,46 @@ const ensureDbOpen = async (retries = 3): Promise<void> => {
 
 // 数据库操作类
 export class DatabaseManager {
+  // 数据清理方法，避免DataCloneError
+  static sanitizeDataForStorage(data: any): any {
+    if (data === null || data === undefined) {
+      return data
+    }
+    
+    // 如果是Date对象，转换为ISO字符串
+    if (data instanceof Date) {
+      return data.toISOString()
+    }
+    
+    // 如果是函数，跳过
+    if (typeof data === 'function') {
+      return undefined
+    }
+    
+    // 如果是数组，递归处理每个元素
+    if (Array.isArray(data)) {
+      return data.map(item => this.sanitizeDataForStorage(item))
+    }
+    
+    // 如果是对象，递归处理每个属性
+    if (typeof data === 'object') {
+      const sanitized: any = {}
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const value = data[key]
+          // 跳过函数和undefined值
+          if (typeof value !== 'function' && value !== undefined) {
+            sanitized[key] = this.sanitizeDataForStorage(value)
+          }
+        }
+      }
+      return sanitized
+    }
+    
+    // 基本类型直接返回
+    return data
+  }
+
   // 笔记操作
   static async getNotes(): Promise<Note[]> {
     try {
@@ -74,7 +114,9 @@ export class DatabaseManager {
   static async saveNote(note: Omit<Note, 'id'>): Promise<number> {
     try {
       await ensureDbOpen()
-      return await db.notes.add(note as Note)
+      // 清理数据避免DataCloneError
+      const sanitizedNote = this.sanitizeDataForStorage(note)
+      return await db.notes.add(sanitizedNote as Note)
     } catch (error) {
       console.error('保存笔记失败:', error)
       throw error
@@ -90,9 +132,12 @@ export class DatabaseManager {
         throw new Error(`无效的笔记ID: ${id}`)
       }
       
+      // 深度克隆并序列化数据，避免DataCloneError
+      const sanitizedUpdates = this.sanitizeDataForStorage(updates)
+      
       // 确保更新数据的完整性，处理数组字段
       const updateData = {
-        ...updates,
+        ...sanitizedUpdates,
         updatedAt: new Date().toISOString(),
         id: id // 确保ID正确
       }
@@ -161,7 +206,10 @@ export class DatabaseManager {
 
   static async saveChatSession(session: Omit<ChatSession, 'id'>): Promise<number> {
     try {
-      return await db.chatSessions.add(session as ChatSession)
+      await ensureDbOpen()
+      // 清理数据避免DataCloneError
+      const sanitizedSession = this.sanitizeDataForStorage(session)
+      return await db.chatSessions.add(sanitizedSession as ChatSession)
     } catch (error) {
       console.error('保存对话会话失败:', error)
       throw error
@@ -170,8 +218,13 @@ export class DatabaseManager {
 
   static async updateChatSession(id: number, updates: Partial<ChatSession>): Promise<void> {
     try {
+      await ensureDbOpen()
+      
+      // 深度克隆并序列化数据，避免DataCloneError
+      const sanitizedUpdates = this.sanitizeDataForStorage(updates)
+      
       await db.chatSessions.update(id, {
-        ...updates,
+        ...sanitizedUpdates,
         updatedAt: new Date().toISOString()
       })
     } catch (error) {
@@ -227,7 +280,10 @@ export class DatabaseManager {
 
   static async saveTask(task: Omit<Task, 'id'>): Promise<number> {
     try {
-      return await db.tasks.add(task as Task)
+      await ensureDbOpen()
+      // 清理数据避免DataCloneError
+      const sanitizedTask = this.sanitizeDataForStorage(task)
+      return await db.tasks.add(sanitizedTask as Task)
     } catch (error) {
       console.error('保存任务失败:', error)
       throw error
@@ -236,8 +292,11 @@ export class DatabaseManager {
 
   static async updateTask(id: number, updates: Partial<Task>): Promise<void> {
     try {
+      await ensureDbOpen()
+      // 清理数据避免DataCloneError
+      const sanitizedUpdates = this.sanitizeDataForStorage(updates)
       await db.tasks.update(id, {
-        ...updates,
+        ...sanitizedUpdates,
         updatedAt: new Date().toISOString()
       })
     } catch (error) {
