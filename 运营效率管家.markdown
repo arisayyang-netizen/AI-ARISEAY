@@ -1,0 +1,2680 @@
+# 🌿 运营效率助手 - 完整产品需求文档
+
+## 📋 产品概述
+
+### 产品定位
+面向运营人员的智能项目管理和能力提升平台，通过科学的任务管理、框架思维训练和数据驱动的分析，帮助运营人员提升工作效率、项目管理能力和职业竞争力。
+
+### 核心价值主张
+- **零门槛使用**：无需注册登录，打开网址即可使用，所有数据本地存储
+- **运营专属**：专为运营岗位设计的工作场景和功能
+- **能力提升**：不仅是工具，更是能力培养平台
+- **科技美学**：Apple风格的简洁设计 + 舒缓的浅绿色调
+
+### 目标用户
+- **主要用户**：互联网运营人员（新媒体运营、用户运营、活动运营、产品运营等）
+- **次要用户**：项目经理、产品经理、市场人员
+- **用户痛点**：工作内容繁杂、时间管理混乱、缺乏系统思维、紧迫感不足
+
+---
+
+## 🎨 设计规范
+
+### 视觉风格
+- **设计语言**：Minimal Apple Style（极简苹果风格）
+- **核心理念**：简洁、直观、优雅、科技感
+- **交互原则**：一目了然、一步到位、一键操作
+
+### 配色方案
+```css
+/* 主色调 - 很淡很淡的浅绿色系 */
+:root {
+  /* 主绿色系 */
+  --primary: #E8F5E8;          /* 非常淡的薄荷绿 */
+  --primary-light: #F4FAF4;    /* 极淡的绿色背景 */
+  --primary-medium: #D1E7D1;   /* 中等淡绿 */
+  --primary-deep: #A8D5A8;     /* 较深的淡绿 */
+
+  /* 辅助色 */
+  --accent: #B8E6B8;           /* 强调绿 */
+  --success: #90C695;          /* 成功绿 */
+  --warning: #F0E68C;          /* 温暖黄 */
+  --error: #F4A3A3;            /* 温和红 */
+  --info: #A3C4F4;             /* 清爽蓝 */
+
+  /* 中性色 */
+  --white: #FFFFFF;            /* 纯白 */
+  --gray-50: #FAFBFA;          /* 极淡灰绿 */
+  --gray-100: #F5F7F5;         /* 很淡灰绿 */
+  --gray-200: #E5E9E5;         /* 淡灰绿 */
+  --gray-300: #D0D7D0;         /* 中灰绿 */
+  --gray-400: #9CA69C;         /* 深灰绿 */
+  --gray-500: #6B756B;         /* 文字灰 */
+  --gray-600: #4A544A;         /* 深文字 */
+  --gray-700: #2A322A;         /* 标题黑 */
+  --gray-800: #1A201A;         /* 深黑 */
+
+  /* 功能色 */
+  --background: var(--white);   /* 主背景 */
+  --surface: var(--gray-50);    /* 卡片背景 */
+  --border: var(--gray-200);    /* 边框色 */
+  --text-primary: var(--gray-700);    /* 主文字 */
+  --text-secondary: var(--gray-500);  /* 次要文字 */
+  --text-tertiary: var(--gray-400);   /* 辅助文字 */
+}
+```
+
+### 字体系统
+```css
+/* 字体层级 */
+.font-system {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 
+               'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 
+               'Microsoft YaHei', sans-serif;
+}
+
+/* 字号体系 */
+.text-xs    { font-size: 11px; line-height: 16px; font-weight: 400; }  /* 辅助信息 */
+.text-sm    { font-size: 13px; line-height: 18px; font-weight: 400; }  /* 次要文字 */
+.text-base  { font-size: 15px; line-height: 22px; font-weight: 400; }  /* 正文 */
+.text-lg    { font-size: 17px; line-height: 24px; font-weight: 500; }  /* 小标题 */
+.text-xl    { font-size: 19px; line-height: 26px; font-weight: 600; }  /* 标题 */
+.text-2xl   { font-size: 22px; line-height: 30px; font-weight: 700; }  /* 大标题 */
+.text-3xl   { font-size: 28px; line-height: 36px; font-weight: 700; }  /* 页面标题 */
+```
+
+### 圆角和间距
+```css
+/* 圆角系统 */
+:root {
+  --radius-sm: 6px;     /* 小组件 */
+  --radius-md: 10px;    /* 按钮、输入框 */
+  --radius-lg: 14px;    /* 卡片 */
+  --radius-xl: 20px;    /* 大卡片 */
+  --radius-2xl: 28px;   /* 特殊容器 */
+}
+
+/* 间距系统 (基于8px) */
+:root {
+  --space-1: 4px;       /* 0.25rem */
+  --space-2: 8px;       /* 0.5rem */
+  --space-3: 12px;      /* 0.75rem */
+  --space-4: 16px;      /* 1rem */
+  --space-5: 20px;      /* 1.25rem */
+  --space-6: 24px;      /* 1.5rem */
+  --space-8: 32px;      /* 2rem */
+  --space-10: 40px;     /* 2.5rem */
+  --space-12: 48px;     /* 3rem */
+  --space-16: 64px;     /* 4rem */
+  --space-20: 80px;     /* 5rem */
+}
+```
+
+---
+
+## 🏗️ 整体架构设计
+
+### 应用结构
+```
+运营效率助手
+├── 📊 工作概览 (Dashboard)
+├── ✍️ 工作记录 (Work Log)
+├── 📋 任务管理 (Task Manager)
+├── 🎯 项目框架 (Project Framework)
+├── 📚 每日学习 (Daily Learning)
+└── ⚙️ 个人设置 (Settings)
+```
+
+### 核心功能矩阵
+| 模块 | 主要功能 | 核心价值 | 能力提升 |
+|------|----------|----------|----------|
+| 工作概览 | 数据统计、效率分析、智能洞察 | 数据驱动决策 | 数据思维 |
+| 工作记录 | 实时记录、时间追踪、自动分类 | 工作留痕、复盘分析 | 总结能力 |
+| 任务管理 | 任务拆解、优先级管理、进度跟踪 | 高效执行 | 项目管理 |
+| 项目框架 | 框架模板、思维导图、流程设计 | 系统思维 | 框架思维 |
+| 每日学习 | 知识推送、案例分析、技能测评 | 持续成长 | 学习能力 |
+| 个人设置 | 偏好配置、数据导出、提醒设置 | 个性化体验 | 自我管理 |
+
+---
+
+## 📱 界面布局设计
+
+### 主布局结构
+```html
+<div class="app-container">
+  <!-- 顶部导航栏 -->
+  <header class="top-navigation">
+    <div class="nav-left">
+      <div class="app-logo">🌿 运营效率助手</div>
+    </div>
+    <div class="nav-center">
+      <div class="quick-search">
+        <input placeholder="搜索任务、项目、笔记..." />
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="notification-btn">🔔</button>
+      <button class="theme-toggle">🌙</button>
+    </div>
+  </header>
+
+  <!-- 侧边导航栏 -->
+  <aside class="side-navigation">
+    <nav class="nav-menu">
+      <NavItem icon="📊" label="工作概览" />
+      <NavItem icon="✍️" label="工作记录" />
+      <NavItem icon="📋" label="任务管理" />
+      <NavItem icon="🎯" label="项目框架" />
+      <NavItem icon="📚" label="每日学习" />
+      <NavItem icon="⚙️" label="个人设置" />
+    </nav>
+  </aside>
+
+  <!-- 主内容区域 -->
+  <main class="main-content">
+    <router-view />
+  </main>
+</div>
+```
+
+### 响应式布局
+```css
+/* 桌面端 (1200px+) */
+.app-container {
+  display: grid;
+  grid-template-areas: 
+    "header header"
+    "sidebar main";
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+  background: var(--background);
+}
+
+/* 平板端 (768px - 1199px) */
+@media (max-width: 1199px) {
+  .app-container {
+    grid-template-columns: 220px 1fr;
+  }
+}
+
+/* 移动端 (< 768px) */
+@media (max-width: 767px) {
+  .app-container {
+    grid-template-areas: 
+      "header"
+      "main"
+      "sidebar";
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 1fr 70px;
+  }
+
+  .side-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+}
+```
+
+---
+
+## 📊 模块一：工作概览
+
+### 功能概述
+为运营人员提供工作数据的可视化分析，包括效率统计、任务完成情况、时间分配分析等，帮助用户了解自己的工作状态并优化工作方式。
+
+### 界面设计
+```html
+<div class="dashboard-container">
+  <!-- 关键指标卡片 -->
+  <section class="metrics-grid">
+    <div class="metric-card today-tasks">
+      <div class="metric-icon">📝</div>
+      <div class="metric-content">
+        <h3>今日任务</h3>
+        <div class="metric-value">{{ todayTasks.completed }}/{{ todayTasks.total }}</div>
+        <div class="metric-progress">
+          <div class="progress-bar" :style="{ width: completionRate + '%' }"></div>
+        </div>
+        <p class="metric-subtitle">完成率 {{ completionRate }}%</p>
+      </div>
+    </div>
+  
+    <div class="metric-card work-hours">
+      <div class="metric-icon">⏰</div>
+      <div class="metric-content">
+        <h3>今日工时</h3>
+        <div class="metric-value">{{ formatTime(todayWorkTime) }}</div>
+        <p class="metric-subtitle">平均 {{ formatTime(avgDailyTime) }}/天</p>
+      </div>
+    </div>
+  
+    <div class="metric-card efficiency">
+      <div class="metric-icon">⚡</div>
+      <div class="metric-content">
+        <h3>工作效率</h3>
+        <div class="metric-value">{{ efficiencyScore }}%</div>
+        <div class="metric-trend" :class="efficiencyTrend">
+          {{ efficiencyTrend === 'up' ? '↗️' : '↘️' }} {{ efficiencyChange }}%
+        </div>
+      </div>
+    </div>
+  
+    <div class="metric-card streak">
+      <div class="metric-icon">🔥</div>
+      <div class="metric-content">
+        <h3>连续天数</h3>
+        <div class="metric-value">{{ streakDays }}</div>
+        <p class="metric-subtitle">保持记录习惯</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 智能洞察 -->
+  <section class="insights-section">
+    <header class="section-header">
+      <h3>💡 今日洞察</h3>
+    </header>
+    <div class="insights-grid">
+      <div v-for="insight in dailyInsights" :key="insight.id" class="insight-card">
+        <div class="insight-icon">{{ insight.icon }}</div>
+        <div class="insight-content">
+          <h4>{{ insight.title }}</h4>
+          <p>{{ insight.description }}</p>
+          <button v-if="insight.action" @click="executeInsightAction(insight)" class="insight-action">
+            {{ insight.actionText }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 数据图表 -->
+  <section class="charts-section">
+    <div class="chart-container">
+      <header class="chart-header">
+        <h3>工作时间分布</h3>
+        <div class="time-selector">
+          <button :class="{ active: timeRange === 'week' }" @click="timeRange = 'week'">本周</button>
+          <button :class="{ active: timeRange === 'month' }" @click="timeRange = 'month'">本月</button>
+        </div>
+      </header>
+      <div class="chart-content">
+        <TimeDistributionChart :data="timeDistributionData" :range="timeRange" />
+      </div>
+    </div>
+  
+    <div class="chart-container">
+      <header class="chart-header">
+        <h3>任务完成趋势</h3>
+      </header>
+      <div class="chart-content">
+        <TaskTrendChart :data="taskTrendData" />
+      </div>
+    </div>
+  </section>
+</div>
+```
+
+---
+
+## ✍️ 模块二：工作记录
+
+### 功能概述
+帮助运营人员实时记录工作内容、追踪时间投入，自动分类工作类型，支持快速回顾和数据分析。
+
+### 界面设计
+```html
+<div class="work-log-container">
+  <!-- 快速记录区域 -->
+  <section class="quick-log-section">
+    <div class="log-input-card">
+      <header class="input-header">
+        <h3>✍️ 记录工作</h3>
+        <div class="timer-display" v-if="isTimerRunning">
+          <span class="timer-icon">⏱️</span>
+          <span class="timer-text">{{ formatTimerDisplay(currentTimerDuration) }}</span>
+          <button @click="stopTimer" class="stop-timer-btn">停止</button>
+        </div>
+      </header>
+    
+      <div class="input-area">
+        <!-- 工作内容输入 -->
+        <textarea
+          v-model="currentLog.content"
+          placeholder="记录你刚刚完成的工作内容..."
+          class="content-textarea"
+          rows="4"
+          @input="onContentInput"
+        ></textarea>
+      
+        <!-- AI智能建议 -->
+        <div v-if="aiSuggestions.length" class="ai-suggestions">
+          <div class="suggestions-header">
+            <span class="ai-icon">🤖</span>
+            <span>AI建议分类</span>
+          </div>
+          <div class="suggestions-list">
+            <button
+              v-for="suggestion in aiSuggestions"
+              :key="suggestion.category"
+              @click="applySuggestion(suggestion)"
+              class="suggestion-btn"
+            >
+              {{ suggestion.icon }} {{ suggestion.category }}
+            </button>
+          </div>
+        </div>
+      
+        <!-- 工作分类选择 -->
+        <div class="category-selection">
+          <div class="category-grid">
+            <button
+              v-for="category in workCategories"
+              :key="category.id"
+              @click="selectCategory(category)"
+              class="category-btn"
+              :class="{ active: currentLog.categoryId === category.id }"
+            >
+              <span class="category-icon">{{ category.icon }}</span>
+              <span class="category-name">{{ category.name }}</span>
+            </button>
+          </div>
+        </div>
+      
+        <!-- 时间记录 -->
+        <div class="time-tracking">
+          <div class="time-input-group">
+            <label class="time-label">耗时</label>
+            <div class="time-controls">
+              <button @click="startTimer" class="timer-btn" :disabled="isTimerRunning">
+                <span class="btn-icon">▶️</span>
+                <span>开始计时</span>
+              </button>
+              <span class="time-separator">或</span>
+              <div class="manual-time-input">
+                <input
+                  type="number"
+                  v-model="currentLog.duration"
+                  placeholder="30"
+                  class="duration-input"
+                  min="1"
+                  max="480"
+                />
+                <span class="time-unit">分钟</span>
+              </div>
+            </div>
+          </div>
+        
+          <!-- 专注度评估 */
+          <div class="quality-assessment">
+            <label class="quality-label">专注度</label>
+            <div class="quality-stars">
+              <button
+                v-for="star in 5"
+                :key="star"
+                @click="setQuality(star)"
+                class="star-btn"
+                :class="{ active: star <= currentLog.qualityScore }"
+              >
+                ⭐
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+          <button @click="saveLog" class="save-btn" :disabled="!canSave">
+            <span class="btn-icon">💾</span>
+            <span>保存记录</span>
+          </button>
+          <button @click="saveAndContinue" class="continue-btn" :disabled="!canSave">
+            <span class="btn-icon">➕</span>
+            <span>保存并继续</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 今日记录列表 -->
+  <section class="today-logs-section">
+    <header class="section-header">
+      <h3>📅 今日记录</h3>
+      <div class="header-stats">
+        <span class="stat-item">{{ todayLogs.length }}条记录</span>
+        <span class="stat-item">{{ formatTime(todayTotalTime) }}总时长</span>
+      </div>
+    </header>
+  
+    <div class="logs-timeline">
+      <div
+        v-for="log in todayLogs"
+        :key="log.id"
+        class="log-timeline-item"
+      >
+        <div class="timeline-marker" :style="{ backgroundColor: log.category.color }"></div>
+        <div class="log-card">
+          <header class="log-header">
+            <div class="log-category">
+              <span class="category-icon">{{ log.category.icon }}</span>
+              <span class="category-name">{{ log.category.name }}</span>
+            </div>
+            <div class="log-meta">
+              <span class="log-time">{{ formatLogTime(log.createdAt) }}</span>
+              <span class="log-duration">{{ formatTime(log.duration) }}</span>
+            </div>
+          </header>
+        
+          <div class="log-content">
+            <p class="log-text">{{ log.content }}</p>
+          
+            <!-- 质量和标签 -->
+            <div class="log-footer">
+              <div class="quality-display">
+                <span class="quality-stars">
+                  <span v-for="star in log.qualityScore" :key="star" class="active-star">⭐</span>
+                  <span v-for="star in (5 - log.qualityScore)" :key="star" class="inactive-star">☆</span>
+                </span>
+                <span class="quality-text">专注度</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+```
+
+---
+
+## 📋 模块三：任务管理
+
+### 功能概述
+智能任务管理系统，支持任务拆解、优先级管理、自动归类、进度跟踪和智能提醒。
+
+### 界面设计
+```html
+<div class="task-manager-container">
+  <!-- 任务创建区域 -->
+  <section class="task-creation-section">
+    <div class="creation-card">
+      <header class="creation-header">
+        <h3>📋 创建任务</h3>
+        <div class="creation-mode-toggle">
+          <button 
+            :class="{ active: creationMode === 'simple' }"
+            @click="creationMode = 'simple'"
+            class="mode-btn"
+          >
+            快速创建
+          </button>
+          <button 
+            :class="{ active: creationMode === 'detailed' }"
+            @click="creationMode = 'detailed'"
+            class="mode-btn"
+          >
+            详细创建
+          </button>
+        </div>
+      </header>
+    
+      <!-- 快速创建模式 -->
+      <div v-if="creationMode === 'simple'" class="simple-creation">
+        <div class="quick-input">
+          <input
+            v-model="quickTaskInput"
+            @keyup.enter="createQuickTask"
+            placeholder="输入任务内容，系统会智能解析..."
+            class="quick-task-input"
+          />
+          <button @click="createQuickTask" class="create-btn" :disabled="!quickTaskInput.trim()">
+            <span class="btn-icon">➕</span>
+            <span>创建</span>
+          </button>
+        </div>
+      
+        <!-- AI解析预览 -->
+        <div v-if="aiTaskAnalysis" class="ai-analysis-preview">
+          <div class="analysis-header">
+            <span class="ai-icon">🤖</span>
+            <span>AI智能解析</span>
+          </div>
+          <div class="analysis-content">
+            <div class="analysis-item">
+              <span class="item-label">任务标题:</span>
+              <span class="item-value">{{ aiTaskAnalysis.title }}</span>
+            </div>
+            <div class="analysis-item">
+              <span class="item-label">优先级:</span>
+              <span class="priority-badge" :class="aiTaskAnalysis.priority">
+                {{ getPriorityText(aiTaskAnalysis.priority) }}
+              </span>
+            </div>
+            <div class="analysis-item" v-if="aiTaskAnalysis.deadline">
+              <span class="item-label">截止时间:</span>
+              <span class="item-value">{{ formatDate(aiTaskAnalysis.deadline) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 详细创建模式 -->
+      <div v-else class="detailed-creation">
+        <form @submit.prevent="createDetailedTask" class="task-form">
+          <div class="form-group">
+            <label class="form-label">任务标题</label>
+            <input
+              v-model="newTask.title"
+              placeholder="清晰描述要完成的工作..."
+              class="form-input"
+              required
+            />
+          </div>
+        
+          <div class="form-group">
+            <label class="form-label">任务描述</label>
+            <textarea
+              v-model="newTask.description"
+              placeholder="详细说明任务要求、背景信息等..."
+              class="form-textarea"
+              rows="3"
+            ></textarea>
+          </div>
+        
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">优先级</label>
+              <div class="priority-selector">
+                <button
+                  v-for="priority in priorityLevels"
+                  :key="priority.value"
+                  type="button"
+                  @click="newTask.priority = priority.value"
+                  class="priority-btn"
+                  :class="{ active: newTask.priority === priority.value }"
+                >
+                  <span class="priority-icon">{{ priority.icon }}</span>
+                  <span class="priority-text">{{ priority.label }}</span>
+                </button>
+              </div>
+            </div>
+          
+            <div class="form-group">
+              <label class="form-label">截止时间</label>
+              <input
+                type="datetime-local"
+                v-model="newTask.deadline"
+                class="form-input"
+              />
+            </div>
+          </div>
+        
+          <!-- 任务拆解 -->
+          <div class="form-group">
+            <label class="form-label">任务拆解</label>
+            <div class="subtasks-container">
+              <div
+                v-for="(subtask, index) in newTask.subtasks"
+                :key="index"
+                class="subtask-item"
+              >
+                <input
+                  v-model="subtask.title"
+                  placeholder="子任务描述..."
+                  class="subtask-input"
+                />
+                <button
+                  type="button"
+                  @click="removeSubtask(index)"
+                  class="remove-subtask-btn"
+                >
+                  🗑️
+                </button>
+              </div>
+            
+              <button
+                type="button"
+                @click="addSubtask"
+                class="add-subtask-btn"
+              >
+                <span class="btn-icon">➕</span>
+                <span>添加子任务</span>
+              </button>
+            </div>
+          </div>
+        
+          <div class="form-actions">
+            <button type="submit" class="submit-btn" :disabled="!newTask.title.trim()">
+              <span class="btn-icon">💾</span>
+              <span>创建任务</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- 任务视图区域 -->
+  <section class="task-view-section">
+    <!-- 视图切换 -->
+    <header class="view-header">
+      <div class="view-controls">
+        <div class="view-modes">
+          <button
+            v-for="mode in viewModes"
+            :key="mode.value"
+            @click="currentViewMode = mode.value"
+            class="view-mode-btn"
+            :class="{ active: currentViewMode === mode.value }"
+          >
+            <span class="mode-icon">{{ mode.icon }}</span>
+            <span class="mode-label">{{ mode.label }}</span>
+          </button>
+        </div>
+      
+        <div class="filter-controls">
+          <select v-model="filterStatus" class="filter-select">
+            <option value="">全部状态</option>
+            <option value="pending">待开始</option>
+            <option value="in-progress">进行中</option>
+            <option value="completed">已完成</option>
+          </select>
+        </div>
+      </div>
+    </header>
+  
+    <!-- 列表视图 -->
+    <div v-if="currentViewMode === 'list'" class="list-view">
+      <div v-for="group in groupedTasks" :key="group.key" class="task-group">
+        <header class="group-header">
+          <h4 class="group-title">
+            <span class="group-icon">{{ group.icon }}</span>
+            <span>{{ group.title }}</span>
+            <span class="task-count">({{ group.tasks.length }})</span>
+          </h4>
+        </header>
+      
+        <div class="group-content">
+          <div
+            v-for="task in group.tasks"
+            :key="task.id"
+            class="task-card"
+          >
+            <div class="task-header">
+              <div class="task-priority" :class="task.priority">
+                {{ getPriorityIcon(task.priority) }}
+              </div>
+              <h5 class="task-title">{{ task.title }}</h5>
+              <div class="task-status" :class="task.status">
+                {{ getStatusText(task.status) }}
+              </div>
+            </div>
+          
+            <div class="task-content">
+              <p class="task-description">{{ task.description }}</p>
+            
+              <!-- 子任务进度 -->
+              <div v-if="task.subtasks.length" class="subtask-progress">
+                <div class="progress-info">
+                  <span class="progress-text">
+                    {{ task.completedSubtasks }}/{{ task.subtasks.length }} 子任务
+                  </span>
+                  <span class="progress-percentage">
+                    {{ Math.round((task.completedSubtasks / task.subtasks.length) * 100) }}%
+                  </span>
+                </div>
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill" 
+                    :style="{ width: (task.completedSubtasks / task.subtasks.length) * 100 + '%' }"
+                  ></div>
+                </div>
+              </div>
+            
+              <!-- 任务元信息 -->
+              <div class="task-meta">
+                <div class="meta-item" v-if="task.deadline">
+                  <span class="meta-icon">⏰</span>
+                  <span class="meta-text">{{ formatRelativeTime(task.deadline) }}</span>
+                </div>
+                <div class="meta-item" v-if="task.estimatedTime">
+                  <span class="meta-icon">⏱️</span>
+                  <span class="meta-text">{{ task.estimatedTime }}分钟</span>
+                </div>
+              </div>
+            </div>
+          
+            <div class="task-actions">
+              <button @click="startTask(task)" class="action-btn start-btn" v-if="task.status === 'pending'">
+                ▶️
+              </button>
+              <button @click="pauseTask(task)" class="action-btn pause-btn" v-if="task.status === 'in-progress'">
+                ⏸️
+              </button>
+              <button @click="completeTask(task)" class="action-btn complete-btn" v-if="task.status !== 'completed'">
+                ✅
+              </button>
+              <button @click="editTask(task)" class="action-btn edit-btn">
+                ✏️
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 看板视图 */
+    <div v-else-if="currentViewMode === 'kanban'" class="kanban-view">
+      <div class="kanban-columns">
+        <div
+          v-for="column in kanbanColumns"
+          :key="column.status"
+          class="kanban-column"
+        >
+          <header class="column-header">
+            <h4 class="column-title">{{ column.title }}</h4>
+            <span class="column-count">{{ column.tasks.length }}</span>
+          </header>
+        
+          <div class="column-content">
+            <div
+              v-for="task in column.tasks"
+              :key="task.id"
+              class="kanban-task-card"
+            >
+              <div class="task-priority" :class="task.priority">
+                {{ getPriorityIcon(task.priority) }}
+              </div>
+              <h5 class="task-title">{{ task.title }}</h5>
+              <p class="task-description">{{ task.description }}</p>
+            
+              <div class="task-footer">
+                <div class="task-deadline" v-if="task.deadline">
+                  ⏰ {{ formatDate(task.deadline) }}
+                </div>
+                <div class="task-subtasks" v-if="task.subtasks.length">
+                  📋 {{ task.completedSubtasks }}/{{ task.subtasks.length }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+```
+
+---
+
+## 🎯 模块四：项目框架
+
+### 功能概述
+提供运营项目的框架模板和思维导图工具，帮助用户建立系统性思维，提升项目规划和执行能力。
+
+### 界面设计
+```html
+<div class="framework-container">
+  <!-- 框架库 -->
+  <section class="framework-library">
+    <header class="library-header">
+      <h3>🎯 项目框架库</h3>
+      <div class="library-controls">
+        <select v-model="selectedCategory" class="category-filter">
+          <option value="">全部分类</option>
+          <option value="marketing">营销框架</option>
+          <option value="analysis">分析框架</option>
+          <option value="strategy">策略框架</option>
+          <option value="execution">执行框架</option>
+        </select>
+        <button @click="createCustomFramework" class="create-framework-btn">
+          <span class="btn-icon">➕</span>
+          <span>创建框架</span>
+        </button>
+      </div>
+    </header>
+  
+    <div class="framework-grid">
+      <div
+        v-for="framework in filteredFrameworks"
+        :key="framework.id"
+        class="framework-card"
+        @click="selectFramework(framework)"
+      >
+        <div class="framework-icon">{{ framework.icon }}</div>
+        <div class="framework-content">
+          <h4 class="framework-title">{{ framework.name }}</h4>
+          <p class="framework-description">{{ framework.description }}</p>
+          <div class="framework-meta">
+            <span class="framework-category">{{ framework.category }}</span>
+            <span class="framework-usage">{{ framework.usageCount }}次使用</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 框架编辑器 */
+  <section class="framework-editor" v-if="selectedFramework">
+    <header class="editor-header">
+      <h3>{{ selectedFramework.name }}</h3>
+      <div class="editor-controls">
+        <button @click="saveFrameworkInstance" class="save-btn">
+          <span class="btn-icon">💾</span>
+          <span>保存实例</span>
+        </button>
+        <button @click="exportFramework" class="export-btn">
+          <span class="btn-icon">📤</span>
+          <span>导出</span>
+        </button>
+      </div>
+    </header>
+  
+    <div class="editor-content">
+      <!-- 框架说明 -->
+      <div class="framework-instruction">
+        <h4>📖 框架说明</h4>
+        <p>{{ selectedFramework.instruction }}</p>
+      </div>
+    
+      <!-- 框架步骤 -->
+      <div class="framework-steps">
+        <h4>📋 执行步骤</h4>
+        <div class="steps-container">
+          <div
+            v-for="(step, index) in frameworkInstance.steps"
+            :key="index"
+            class="step-item"
+          >
+            <div class="step-header">
+              <div class="step-number">{{ index + 1 }}</div>
+              <h5 class="step-title">{{ step.title }}</h5>
+              <div class="step-status" :class="step.status">
+                {{ getStepStatusIcon(step.status) }}
+              </div>
+            </div>
+          
+            <div class="step-content">
+              <p class="step-description">{{ step.description }}</p>
+            
+              <!-- 输入字段 -->
+              <div class="step-inputs">
+                <div
+                  v-for="input in step.inputs"
+                  :key="input.key"
+                  class="input-group"
+                >
+                  <label class="input-label">{{ input.label }}</label>
+                  <textarea
+                    v-if="input.type === 'textarea'"
+                    v-model="frameworkInstance.data[input.key]"
+                    :placeholder="input.placeholder"
+                    class="step-textarea"
+                    rows="3"
+                  ></textarea>
+                  <input
+                    v-else
+                    v-model="frameworkInstance.data[input.key]"
+                    :type="input.type"
+                    :placeholder="input.placeholder"
+                    class="step-input"
+                  />
+                </div>
+              </div>
+            
+              <!-- 检查清单 */
+              <div v-if="step.checklist" class="step-checklist">
+                <h6>✅ 检查清单</h6>
+                <div class="checklist-items">
+                  <label
+                    v-for="(item, itemIndex) in step.checklist"
+                    :key="itemIndex"
+                    class="checklist-item"
+                  >
+                    <input
+                      type="checkbox"
+                      v-model="frameworkInstance.checklistData[`${index}-${itemIndex}`]"
+                    />
+                    <span class="checklist-text">{{ item }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          
+            <div class="step-actions">
+              <button
+                @click="completeStep(index)"
+                class="complete-step-btn"
+                :disabled="!canCompleteStep(step)"
+              >
+                完成步骤
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 框架输出 -->
+      <div class="framework-output">
+        <h4>📄 框架输出</h4>
+        <div class="output-content">
+          <div class="output-summary">
+            <h5>项目总结</h5>
+            <div class="auto-generated-summary">
+              {{ generateFrameworkSummary() }}
+            </div>
+          </div>
+        
+          <div class="output-actions">
+            <h5>后续行动</h5>
+            <div class="action-items">
+              <div
+                v-for="action in generatedActions"
+                :key="action.id"
+                class="action-item"
+              >
+                <div class="action-content">
+                  <h6>{{ action.title }}</h6>
+                  <p>{{ action.description }}</p>
+                </div>
+                <button @click="convertToTask(action)" class="convert-task-btn">
+                  转为任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 我的框架实例 -->
+  <section class="my-frameworks">
+    <header class="section-header">
+      <h3>📁 我的框架实例</h3>
+      <div class="view-toggle">
+        <button
+          :class="{ active: instanceView === 'grid' }"
+          @click="instanceView = 'grid'"
+          class="view-btn"
+        >
+          网格
+        </button>
+        <button
+          :class="{ active: instanceView === 'list' }"
+          @click="instanceView = 'list'"
+          class="view-btn"
+        >
+          列表
+        </button>
+      </div>
+    </header>
+  
+    <div class="instances-container" :class="instanceView">
+      <div
+        v-for="instance in myFrameworkInstances"
+        :key="instance.id"
+        class="instance-card"
+        @click="openFrameworkInstance(instance)"
+      >
+        <div class="instance-header">
+          <div class="instance-icon">{{ instance.framework.icon }}</div>
+          <div class="instance-info">
+            <h4 class="instance-title">{{ instance.title || instance.framework.name }}</h4>
+            <p class="instance-subtitle">{{ instance.framework.name }}</p>
+          </div>
+          <div class="instance-status" :class="instance.status">
+            {{ getInstanceStatusIcon(instance.status) }}
+          </div>
+        </div>
+      
+        <div class="instance-content">
+          <div class="instance-progress">
+            <div class="progress-info">
+              <span class="progress-text">
+                {{ instance.completedSteps }}/{{ instance.totalSteps }} 步骤完成
+              </span>
+              <span class="progress-percentage">
+                {{ Math.round((instance.completedSteps / instance.totalSteps) * 100) }}%
+              </span>
+            </div>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill" 
+                :style="{ width: (instance.completedSteps / instance.totalSteps) * 100 + '%' }"
+              ></div>
+            </div>
+          </div>
+        
+          <div class="instance-meta">
+            <span class="meta-item">
+              <span class="meta-icon">📅</span>
+              <span>{{ formatDate(instance.createdAt) }}</span>
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon">⏱️</span>
+              <span>{{ formatRelativeTime(instance.updatedAt) }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+```
+
+---
+
+## 📚 模块五：每日学习
+
+### 功能概述
+提供运营相关的每日学习内容，包括知识推送、案例分析、技能测评，帮助用户持续提升专业能力。
+
+### 界面设计
+```html
+<div class="learning-container">
+  <!-- 每日学习卡片 -->
+  <section class="daily-learning">
+    <header class="learning-header">
+      <h3>📚 今日学习</h3>
+      <div class="learning-stats">
+        <span class="stat-item">
+          <span class="stat-icon">🔥</span>
+          <span>连续{{ learningStreak }}天</span>
+        </span>
+        <span class="stat-item">
+          <span class="stat-icon">📖</span>
+          <span>已学{{ totalLearningDays }}天</span>
+        </span>
+      </div>
+    </header>
+  
+    <div class="daily-content">
+      <!-- 今日知识点 -->
+      <div class="knowledge-card">
+        <div class="card-header">
+          <h4>💡 今日知识点</h4>
+          <div class="difficulty-badge" :class="todayKnowledge.difficulty">
+            {{ getDifficultyText(todayKnowledge.difficulty) }}
+          </div>
+        </div>
+      
+        <div class="knowledge-content">
+          <h5 class="knowledge-title">{{ todayKnowledge.title }}</h5>
+          <div class="knowledge-category">
+            <span class="category-icon">{{ todayKnowledge.category.icon }}</span>
+            <span class="category-name">{{ todayKnowledge.category.name }}</span>
+          </div>
+        
+          <div class="knowledge-body">
+            <p class="knowledge-summary">{{ todayKnowledge.summary }}</p>
+          
+            <!-- 关键要点 -->
+            <div class="key-points">
+              <h6>🎯 关键要点</h6>
+              <ul class="points-list">
+                <li v-for="point in todayKnowledge.keyPoints" :key="point">
+                  {{ point }}
+                </li>
+              </ul>
+            </div>
+          
+            <!-- 实践建议 -->
+            <div class="practice-tips">
+              <h6>🚀 实践建议</h6>
+              <p>{{ todayKnowledge.practiceTip }}</p>
+            </div>
+          </div>
+        
+          <div class="knowledge-actions">
+            <button @click="markAsLearned" class="learned-btn" :disabled="isLearned">
+              <span class="btn-icon">✅</span>
+              <span>{{ isLearned ? '已学习' : '标记已学' }}</span>
+            </button>
+            <button @click="saveToFavorites" class="favorite-btn">
+              <span class="btn-icon">⭐</span>
+              <span>收藏</span>
+            </button>
+            <button @click="shareKnowledge" class="share-btn">
+              <span class="btn-icon">📤</span>
+              <span>分享</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 案例分析 -->
+      <div class="case-study-card">
+        <div class="card-header">
+          <h4>📊 案例分析</h4>
+          <div class="case-type">{{ todayCase.type }}</div>
+        </div>
+      
+        <div class="case-content">
+          <h5 class="case-title">{{ todayCase.title }}</h5>
+          <div class="case-company">{{ todayCase.company }}</div>
+        
+          <div class="case-body">
+            <!-- 背景介绍 -->
+            <div class="case-section">
+              <h6>📋 背景介绍</h6>
+              <p>{{ todayCase.background }}</p>
+            </div>
+          
+            <!-- 挑战问题 -->
+            <div class="case-section">
+              <h6>⚡ 面临挑战</h6>
+              <ul class="challenge-list">
+                <li v-for="challenge in todayCase.challenges" :key="challenge">
+                  {{ challenge }}
+                </li>
+              </ul>
+            </div>
+          
+            <!-- 解决方案 -->
+            <div class="case-section">
+              <h6>💡 解决方案</h6>
+              <p>{{ todayCase.solution }}</p>
+            </div>
+          
+            <!-- 关键结果 -->
+            <div class="case-section">
+              <h6>📈 关键结果</h6>
+              <div class="results-grid">
+                <div
+                  v-for="result in todayCase.results"
+                  :key="result.metric"
+                  class="result-item"
+                >
+                  <div class="result-metric">{{ result.metric }}</div>
+                  <div class="result-value">{{ result.value }}</div>
+                  <div class="result-change" :class="result.trend">
+                    {{ result.change }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <!-- 启发思考 -->
+            <div class="case-section">
+              <h6>🤔 启发思考</h6>
+              <div class="thinking-questions">
+                <div
+                  v-for="question in todayCase.questions"
+                  :key="question"
+                  class="question-item"
+                >
+                  <p class="question-text">{{ question }}</p>
+                  <textarea
+                    v-model="caseAnswers[question]"
+                    placeholder="写下你的思考..."
+                    class="answer-input"
+                    rows="2"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 技能测评 -->
+      <div class="skill-assessment-card">
+        <div class="card-header">
+          <h4>🎯 技能测评</h4>
+          <div class="assessment-type">{{ todayAssessment.skillArea }}</div>
+        </div>
+      
+        <div class="assessment-content">
+          <h5 class="assessment-title">{{ todayAssessment.title }}</h5>
+          <p class="assessment-description">{{ todayAssessment.description }}</p>
+        
+          <div class="questions-container">
+            <div
+              v-for="(question, index) in todayAssessment.questions"
+              :key="index"
+              class="question-card"
+            >
+              <div class="question-header">
+                <span class="question-number">{{ index + 1 }}</span>
+                <span class="question-type">{{ question.type }}</span>
+              </div>
+            
+              <div class="question-content">
+                <p class="question-text">{{ question.question }}</p>
+              
+                <!-- 选择题 -->
+                <div v-if="question.type === 'choice'" class="choice-options">
+                  <label
+                    v-for="(option, optionIndex) in question.options"
+                    :key="optionIndex"
+                    class="option-label"
+                  >
+                    <input
+                      type="radio"
+                      :name="`question-${index}`"
+                      :value="optionIndex"
+                      v-model="assessmentAnswers[index]"
+                    />
+                    <span class="option-text">{{ option }}</span>
+                  </label>
+                </div>
+              
+                <!-- 开放题 -->
+                <div v-else-if="question.type === 'open'" class="open-answer">
+                  <textarea
+                    v-model="assessmentAnswers[index]"
+                    :placeholder="question.placeholder"
+                    class="answer-textarea"
+                    rows="3"
+                  ></textarea>
+                </div>
+              
+                <!-- 评分题 -->
+                <div v-else-if="question.type === 'rating'" class="rating-scale">
+                  <div class="scale-labels">
+                    <span class="scale-label">{{ question.scaleLabels[0] }}</span>
+                    <span class="scale-label">{{ question.scaleLabels[1] }}</span>
+                  </div>
+                  <div class="scale-buttons">
+                    <button
+                      v-for="score in question.scale"
+                      :key="score"
+                      @click="assessmentAnswers[index] = score"
+                      class="scale-btn"
+                      :class="{ active: assessmentAnswers[index] === score }"
+                    >
+                      {{ score }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="assessment-actions">
+            <button
+              @click="submitAssessment"
+              class="submit-assessment-btn"
+              :disabled="!isAssessmentComplete"
+            >
+              <span class="btn-icon">📊</span>
+              <span>提交测评</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学习历史 -->
+  <section class="learning-history">
+    <header class="section-header">
+      <h3>📈 学习历程</h3>
+      <div class="period-selector">
+        <button
+          v-for="period in periods"
+          :key="period.value"
+          @click="selectedPeriod = period.value"
+          class="period-btn"
+          :class="{ active: selectedPeriod === period.value }"
+        >
+          {{ period.label }}
+        </button>
+      </div>
+    </header>
+  
+    <!-- 学习统计 -->
+    <div class="learning-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ learningStats.totalKnowledge }}</div>
+          <div class="stat-label">学习知识点</div>
+        </div>
+      </div>
+    
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ learningStats.totalCases }}</div>
+          <div class="stat-label">分析案例</div>
+        </div>
+      </div>
+    
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ learningStats.totalAssessments }}</div>
+          <div class="stat-label">技能测评</div>
+        </div>
+      </div>
+    
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ learningStats.averageScore }}</div>
+          <div class="stat-label">平均分数</div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 技能雷达图 -->
+    <div class="skill-radar">
+      <h4>🎯 技能雷达</h4>
+      <div class="radar-chart">
+        <SkillRadarChart :data="skillRadarData" />
+      </div>
+      <div class="skill-legend">
+        <div
+          v-for="skill in skillRadarData"
+          :key="skill.name"
+          class="legend-item"
+        >
+          <div class="legend-color" :style="{ backgroundColor: skill.color }"></div>
+          <span class="legend-label">{{ skill.name }}</span>
+          <span class="legend-score">{{ skill.score }}/100</span>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 学习记录 -->
+    <div class="learning-records">
+      <h4>📋 学习记录</h4>
+      <div class="records-list">
+        <div
+          v-for="record in learningRecords"
+          :key="record.id"
+          class="record-item"
+        >
+          <div class="record-date">
+            <div class="date-day">{{ formatDay(record.date) }}</div>
+            <div class="date-month">{{ formatMonth(record.date) }}</div>
+          </div>
+        
+          <div class="record-content">
+            <div class="record-items">
+              <div
+                v-for="item in record.items"
+                :key="item.id"
+                class="item-tag"
+                :class="item.type"
+              >
+                <span class="item-icon">{{ getItemIcon(item.type) }}</span>
+                <span class="item-text">{{ item.title }}</span>
+              </div>
+            </div>
+          
+            <div class="record-summary">
+              <span class="summary-text">{{ record.summary }}</span>
+              <span class="record-score">{{ record.score }}分</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+```
+
+---
+
+## ⚙️ 模块六：个人设置
+
+### 功能概述
+提供个性化配置选项，包括主题设置、提醒配置、数据导出等功能。
+
+### 界面设计
+```html
+<div class="settings-container">
+  <div class="settings-sidebar">
+    <div class="sidebar-menu">
+      <button
+        v-for="section in settingSections"
+        :key="section.key"
+        @click="activeSection = section.key"
+        class="menu-item"
+        :class="{ active: activeSection === section.key }"
+      >
+        <span class="menu-icon">{{ section.icon }}</span>
+        <span class="menu-label">{{ section.label }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-content">
+    <!-- 主题设置 -->
+    <div v-if="activeSection === 'appearance'" class="setting-section">
+      <header class="section-header">
+        <h3>🎨 外观设置</h3>
+        <p>自定义界面外观和交互体验</p>
+      </header>
+    
+      <div class="setting-groups">
+        <!-- 主题选择 -->
+        <div class="setting-group">
+          <h4>主题模式</h4>
+          <div class="theme-options">
+            <label class="theme-option">
+              <input type="radio" value="light" v-model="settings.theme" />
+              <div class="theme-preview light">
+                <div class="preview-header"></div>
+                <div class="preview-sidebar"></div>
+                <div class="preview-content"></div>
+              </div>
+              <span class="theme-name">浅色模式</span>
+            </label>
+          
+            <label class="theme-option">
+              <input type="radio" value="dark" v-model="settings.theme" />
+              <div class="theme-preview dark">
+                <div class="preview-header"></div>
+                <div class="preview-sidebar"></div>
+                <div class="preview-content"></div>
+              </div>
+              <span class="theme-name">深色模式</span>
+            </label>
+          
+            <label class="theme-option">
+              <input type="radio" value="auto" v-model="settings.theme" />
+              <div class="theme-preview auto">
+                <div class="preview-header"></div>
+                <div class="preview-sidebar"></div>
+                <div class="preview-content"></div>
+              </div>
+              <span class="theme-name">跟随系统</span>
+            </label>
+          </div>
+        </div>
+      
+        <!-- 字体设置 -->
+        <div class="setting-group">
+          <h4>字体设置</h4>
+          <div class="font-controls">
+            <div class="control-item">
+              <label class="control-label">字体大小</label>
+              <div class="font-size-slider">
+                <span class="size-label">小</span>
+                <input
+                  type="range"
+                  min="12"
+                  max="18"
+                  step="1"
+                  v-model="settings.fontSize"
+                  class="slider"
+                />
+                <span class="size-label">大</span>
+              </div>
+              <span class="current-size">{{ settings.fontSize }}px</span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- 动画设置 */
+        <div class="setting-group">
+          <h4>动画效果</h4>
+          <div class="toggle-controls">
+            <label class="toggle-item">
+              <span class="toggle-label">页面切换动画</span>
+              <div class="toggle-switch">
+                <input type="checkbox" v-model="settings.pageAnimation" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          
+            <label class="toggle-item">
+              <span class="toggle-label">卡片悬停效果</span>
+              <div class="toggle-switch">
+                <input type="checkbox" v-model="settings.hoverEffects" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 通知设置 -->
+    <div v-if="activeSection === 'notifications'" class="setting-section">
+      <header class="section-header">
+        <h3>🔔 通知设置</h3>
+        <p>管理各类提醒和通知</p>
+      </header>
+    
+      <div class="setting-groups">
+        <!-- 任务提醒 -->
+        <div class="setting-group">
+          <h4>任务提醒</h4>
+          <div class="notification-items">
+            <label class="notification-item">
+              <div class="item-info">
+                <span class="item-title">任务截止提醒</span>
+                <span class="item-desc">在任务即将到期时提醒</span>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" v-model="settings.notifications.taskDeadline" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          
+            <div v-if="settings.notifications.taskDeadline" class="sub-settings">
+              <div class="time-selector">
+                <label>提前时间：</label>
+                <select v-model="settings.notifications.taskDeadlineTime">
+                  <option value="15">15分钟</option>
+                  <option value="30">30分钟</option>
+                  <option value="60">1小时</option>
+                  <option value="120">2小时</option>
+                  <option value="1440">1天</option>
+                </select>
+              </div>
+            </div>
+          
+            <label class="notification-item">
+              <div class="item-info">
+                <span class="item-title">每日学习提醒</span>
+                <span class="item-desc">提醒完成每日学习任务</span>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" v-model="settings.notifications.dailyLearning" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          
+            <div v-if="settings.notifications.dailyLearning" class="sub-settings">
+              <div class="time-picker">
+                <label>提醒时间：</label>
+                <input
+                  type="time"
+                  v-model="settings.notifications.dailyLearningTime"
+                  class="time-input"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- 工作提醒 */
+        <div class="setting-group">
+          <h4>工作提醒</h4>
+          <div class="notification-items">
+            <label class="notification-item">
+              <div class="item-info">
+                <span class="item-title">长时间未记录提醒</span>
+                <span class="item-desc">超过设定时间未记录工作时提醒</span>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" v-model="settings.notifications.longInactive" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          
+            <label class="notification-item">
+              <div class="item-info">
+                <span class="item-title">工作总结提醒</span>
+                <span class="item-desc">每天结束时提醒进行工作总结</span>
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" v-model="settings.notifications.dailySummary" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 数据管理 -->
+    <div v-if="activeSection === 'data'" class="setting-section">
+      <header class="section-header">
+        <h3>💾 数据管理</h3>
+        <p>备份、导出和清理数据</p>
+      </header>
+    
+      <div class="setting-groups">
+        <!-- 数据统计 -->
+        <div class="setting-group">
+          <h4>数据统计</h4>
+          <div class="data-stats">
+            <div class="stat-item">
+              <span class="stat-label">工作记录</span>
+              <span class="stat-value">{{ dataStats.workLogs }}条</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">任务数据</span>
+              <span class="stat-value">{{ dataStats.tasks }}个</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">框架实例</span>
+              <span class="stat-value">{{ dataStats.frameworks }}个</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">学习记录</span>
+              <span class="stat-value">{{ dataStats.learnings }}条</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">占用空间</span>
+              <span class="stat-value">{{ formatBytes(dataStats.storageSize) }}</span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- 数据导出 -->
+        <div class="setting-group">
+          <h4>数据导出</h4>
+          <div class="export-options">
+            <button @click="exportData('json')" class="export-btn">
+              <span class="btn-icon">📄</span>
+              <span>导出为JSON</span>
+            </button>
+            <button @click="exportData('csv')" class="export-btn">
+              <span class="btn-icon">📊</span>
+              <span>导出为CSV</span>
+            </button>
+            <button @click="exportData('pdf')" class="export-btn">
+              <span class="btn-icon">📋</span>
+              <span>导出为PDF报告</span>
+            </button>
+          </div>
+        </div>
+      
+        <!-- 数据清理 -->
+        <div class="setting-group">
+          <h4>数据清理</h4>
+          <div class="cleanup-options">
+            <button @click="cleanupOldData" class="cleanup-btn warning">
+              <span class="btn-icon">🧹</span>
+              <span>清理30天前数据</span>
+            </button>
+            <button @click="resetAllData" class="cleanup-btn danger">
+              <span class="btn-icon">⚠️</span>
+              <span>重置所有数据</span>
+            </button>
+          </div>
+          <p class="cleanup-warning">
+            ⚠️ 数据清理操作不可撤销，请谨慎操作
+          </p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 快捷键设置 -->
+    <div v-if="activeSection === 'shortcuts'" class="setting-section">
+      <header class="section-header">
+        <h3>⌨️ 快捷键</h3>
+        <p>自定义键盘快捷键提高操作效率</p>
+      </header>
+    
+      <div class="shortcuts-list">
+        <div
+          v-for="shortcut in shortcuts"
+          :key="shortcut.action"
+          class="shortcut-item"
+        >
+          <div class="shortcut-info">
+            <span class="shortcut-name">{{ shortcut.name }}</span>
+            <span class="shortcut-desc">{{ shortcut.description }}</span>
+          </div>
+        
+          <div class="shortcut-keys">
+            <div class="key-combination">
+              <span
+                v-for="key in shortcut.keys"
+                :key="key"
+                class="key-badge"
+              >
+                {{ key }}
+              </span>
+            </div>
+            <button @click="editShortcut(shortcut)" class="edit-shortcut-btn">
+              编辑
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 关于 -->
+    <div v-if="activeSection === 'about'" class="setting-section">
+      <header class="section-header">
+        <h3>ℹ️ 关于</h3>
+        <p>应用信息和帮助</p>
+      </header>
+    
+      <div class="about-content">
+        <div class="app-info">
+          <div class="app-logo">🌿</div>
+          <h4 class="app-name">运营效率助手</h4>
+          <p class="app-version">版本 1.0.0</p>
+          <p class="app-description">
+            专为运营人员设计的项目管理和能力提升平台，
+            帮助提升工作效率、项目管理能力和框架思维。
+          </p>
+        </div>
+      
+        <div class="help-links">
+          <h5>帮助与支持</h5>
+          <div class="links-grid">
+            <a href="#" class="help-link">
+              <span class="link-icon">📖</span>
+              <span>使用指南</span>
+            </a>
+            <a href="#" class="help-link">
+              <span class="link-icon">💬</span>
+              <span>意见反馈</span>
+            </a>
+            <a href="#" class="help-link">
+              <span class="link-icon">🔗</span>
+              <span>更新日志</span>
+            </a>
+            <a href="#" class="help-link">
+              <span class="link-icon">📧</span>
+              <span>联系我们</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## 💻 技术实现方案
+
+### 技术栈选择
+```typescript
+// 前端技术栈
+const techStack = {
+  framework: 'Vue 3 + TypeScript',
+  buildTool: 'Vite',
+  uiLibrary: '自定义组件库',
+  stateManagement: 'Pinia',
+  router: 'Vue Router 4',
+  styling: 'CSS3 + CSS Variables',
+  charts: 'Chart.js / D3.js',
+  storage: 'IndexedDB + LocalStorage',
+  pwa: 'Workbox',
+  icons: 'Emoji + Custom SVG'
+};
+```
+
+### 数据存储设计
+```typescript
+// 本地存储结构
+interface LocalStorageSchema {
+  workLogs: WorkLog[];
+  tasks: Task[];
+  frameworkInstances: FrameworkInstance[];
+  learningRecords: LearningRecord[];
+  settings: UserSettings;
+  metadata: {
+    version: string;
+    lastBackup: Date;
+    totalUsageDays: number;
+  };
+}
+
+// IndexedDB 设计
+const dbSchema = {
+  name: 'OperationHelper',
+  version: 1,
+  stores: {
+    workLogs: {
+      keyPath: 'id',
+      indexes: ['date', 'categoryId', 'duration']
+    },
+    tasks: {
+      keyPath: 'id',
+      indexes: ['status', 'priority', 'deadline', 'categoryId']
+    },
+    frameworks: {
+      keyPath: 'id',
+      indexes: ['frameworkId', 'status', 'createdAt']
+    },
+    learning: {
+      keyPath: 'id',
+      indexes: ['date', 'type', 'completed']
+    }
+  }
+};
+```
+
+### 核心功能实现
+```typescript
+// 智能分类引擎
+class SmartCategorizer {
+  private async analyzeContent(content: string): Promise<Category> {
+    // 使用关键词匹配 + 模式识别
+    const keywords = this.extractKeywords(content);
+    const patterns = this.matchPatterns(content);
+    const context = this.analyzeContext(content);
+  
+    return this.calculateBestMatch(keywords, patterns, context);
+  }
+}
+
+// 数据分析引擎
+class AnalyticsEngine {
+  calculateEfficiency(logs: WorkLog[]): EfficiencyMetrics {
+    const timeDistribution = this.analyzeTimeDistribution(logs);
+    const qualityTrend = this.analyzeQualityTrend(logs);
+    const productivityPattern = this.findProductivityPatterns(logs);
+  
+    return {
+      overallScore: this.calculateOverallScore(timeDistribution, qualityTrend),
+      insights: this.generateInsights(productivityPattern),
+      recommendations: this.generateRecommendations(logs)
+    };
+  }
+}
+
+// 学习推荐引擎
+class LearningRecommendationEngine {
+  generateDailyContent(userProfile: UserProfile): DailyLearning {
+    const skillGaps = this.identifySkillGaps(userProfile);
+    const learningHistory = this.getUserLearningHistory(userProfile);
+    const difficulty = this.calculateOptimalDifficulty(userProfile);
+  
+    return {
+      knowledge: this.selectKnowledgePoint(skillGaps, difficulty),
+      caseStudy: this.selectCaseStudy(userProfile.interests),
+      assessment: this.generateAssessment(skillGaps)
+    };
+  }
+}
+```
+
+### 样式系统完整实现
+```css
+/* 全局样式重置和基础设置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 
+               'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 
+               'Microsoft YaHei', sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 应用主布局 */
+.app-container {
+  display: grid;
+  grid-template-areas: 
+    "header header"
+    "sidebar main";
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+  background: var(--background);
+}
+
+/* 顶部导航栏 */
+.top-navigation {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-6);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+.app-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.quick-search {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 var(--space-8);
+}
+
+.quick-search input {
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.quick-search input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(184, 230, 184, 0.2);
+}
+
+.nav-right {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.notification-btn,
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.notification-btn:hover,
+.theme-toggle:hover {
+  background: var(--primary-light);
+}
+
+/* 侧边导航栏 */
+.side-navigation {
+  grid-area: sidebar;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: var(--space-6) 0;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--primary-light);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--accent);
+  color: var(--text-primary);
+}
+
+.nav-item-icon {
+  font-size: 18px;
+}
+
+/* 主内容区域 */
+.main-content {
+  grid-area: main;
+  overflow-y: auto;
+  background: var(--background);
+}
+
+/* 通用卡片样式 */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: 0 2px 8px rgba(168, 213, 168, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(168, 213, 168, 0.15);
+  transform: translateY(-1px);
+}
+
+/* 按钮样式系统 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary-deep) 100%);
+  color: var(--text-primary);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 230, 184, 0.4);
+}
+
+.btn-secondary {
+  background: var(--gray-100);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-light);
+  color: var(--text-primary);
+  border-color: var(--primary-medium);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #e53e3e;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: var(--space-5);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  font-size: 15px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(184, 230, 184, 0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 切换开关 */
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gray-300);
+  border-radius: 24px;
+  transition: 0.2s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+input:checked + .toggle-slider {
+  background: var(--accent);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* 进度条 */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--gray-200);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success) 0%, var(--accent) 100%);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+/* 标签系统 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tag-primary {
+  background: var(--primary-medium);
+  color: var(--text-primary);
+}
+
+.tag-success {
+  background: rgba(144, 198, 149, 0.2);
+  color: var(--success);
+}
+
+.tag-warning {
+  background: rgba(240, 230, 140, 0.2);
+  color: #d69e2e;
+}
+
+.tag-error {
+  background: rgba(244, 163, 163, 0.2);
+  color: var(--error);
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top: 2px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: var(--space-2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: var(--space-12);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-4);
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-description {
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+}
+
+/* 响应式断点 */
+@media (max-width: 1199px) {
+  .app-container {
+    grid-template-columns: 220px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    grid-template-areas: 
+      "header"
+      "main"
+      "sidebar";
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 1fr 70px;
+  }
+
+  .side-navigation {
+    grid-area: sidebar;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    padding: var(--space-2) 0;
+    border-right: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-menu {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0 var(--space-2);
+  }
+
+  .nav-item {
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .nav-item-icon {
+    font-size: 20px;
+  }
+
+  .nav-item-label {
+    font-size: 11px;
+  }
+
+  .quick-search {
+    margin: 0 var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .top-navigation {
+    padding: 0 var(--space-4);
+  }
+
+  .app-logo {
+    font-size: 16px;
+  }
+
+  .quick-search {
+    margin: 0 var(--space-2);
+  }
+
+  .card {
+    padding: var(--space-4);
+    margin: var(--space-2);
+  }
+}
+
+/* 深色主题 */
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --background: #0f0f0f;
+    --surface: #1a1a1a;
+    --border: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --text-tertiary: #707070;
+  
+    --primary: #1a2e1a;
+    --primary-light: #0f1a0f;
+    --primary-medium: #2a3a2a;
+    --primary-deep: #3a4a3a;
+    --accent: #4a6a4a;
+    --success: #5a7a5a;
+  }
+}
+
+[data-theme="dark"] {
+  --background: #0f0f0f;
+  --surface: #1a1a1a;
+  --border: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-tertiary: #707070;
+
+  --primary: #1a2e1a;
+  --primary-light: #0f1a0f;
+  --primary-medium: #2a3a2a;
+  --primary-deep: #3a4a3a;
+  --accent: #4a6a4a;
+  --success: #5a7a5a;
+}
+
+/* 动画效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(100%);
+}
+
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+
+/* 打印样式 */
+@media print {
+  .side-navigation,
+  .top-navigation {
+    display: none;
+  }
+
+  .main-content {
+    grid-area: initial;
+  }
+
+  .app-container {
+    grid-template-areas: "main";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  * {
+    color: black !important;
+    background: white !important;
+  }
+}
+```
+
+---
+
+## 🚀 部署和优化
+
+### 构建配置
+```typescript
+// vite.config.ts
+export default defineConfig({
+  plugins: [
+    vue(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      },
+      manifest: {
+        name: '运营效率助手',
+        short_name: '效率助手',
+        description: '专为运营人员设计的项目管理工具',
+        theme_color: '#E8F5E8',
+        background_color: '#FFFFFF',
+        display: 'standalone',
+        icons: [
+          {
+            src: 'icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          }
+        ]
+      }
+    })
+  ],
+  build: {
+    target: 'es2015',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router', 'pinia'],
+          charts: ['chart.js']
+        }
+      }
+    }
+  }
+});
+```
+
+### 性能优化
+```typescript
+// 懒加载路由
+const routes = [
+  {
+    path: '/dashboard',
+    component: () => import('./views/Dashboard.vue')
+  },
+  {
+    path: '/work-log',
+    component: () => import('./views/WorkLog.vue')
+  }
+];
+
+// 组件懒加载
+const AsyncChart = defineAsyncComponent({
+  loader: () => import('./components/Chart.vue'),
+  loadingComponent: LoadingSpinner,
+  errorComponent: ErrorComponent,
+  delay: 200,
+  timeout: 3000
+});
+
+// 虚拟滚动优化
+const VirtualList = defineComponent({
+  props: ['items', 'itemHeight'],
+  setup(props) {
+    const visibleItems = computed(() => {
+      // 只渲染可见区域的项目
+      return props.items.slice(startIndex.value, endIndex.value);
+    });
+  
+    return { visibleItems };
+  }
+});
+```
+
+---
+
+## 📈 商业模式和发展规划
+
+### 变现策略
+```typescript
+const monetizationStrategy = {
+  // 免费版本
+  free: {
+    features: [
+      '基础工作记录',
+      '简单任务管理',
+      '有限框架模板',
+      '基础数据统计'
+    ],
+    limitations: {
+      dataRetention: '30天',
+      frameworkInstances: 5,
+      dailyTasks: 20
+    }
+  },
+
+  // 专业版本
+  professional: {
+    price: '99元/年',
+    features: [
+      '无限数据存储',
+      '高级分析报告',
+      '自定义框架模板',
+      '团队协作功能',
+      '数据导出',
+      '优先客服支持'
+    ]
+  },
+
+  // 团队版本
+  team: {
+    price: '299元/年/5人',
+    features: [
+      '团队工作台',
+      '项目协作',
+      '团队分析报告',
+      '管理员控制台',
+      'API接口',
+      '定制化培训'
+    ]
+  }
+};
+```
+
+### 推广策略
+```typescript
+const marketingPlan = {
+  contentMarketing: [
+    '运营方法论文章',
+    '效率工具评测',
+    '案例分析分享',
+    '框架模板库'
+  ],
+
+  communityBuilding: [
+    '运营人员社群',
+    '用户反馈收集',
+    '最佳实践分享',
+    '专家访谈'
+  ],
+
+  partnerships: [
+    '运营培训机构合作',
+    '企业内训服务',
+    '工具生态集成',
+    '行业媒体合作'
+  ],
+
+  productLedGrowth: [
+    '免费试用体验',
+    '分享邀请机制',
+    '成果展示功能',
+    '模板分享市场'
+  ]
+};
+```
+
+### 发展路线图
+```typescript
+const roadmap = {
+  phase1: {
+    timeline: '3个月',
+    goals: [
+      'MVP版本上线',
+      '核心功能完善',
+      '用户体验优化',
+      '初期用户获取'
+    ]
+  },
+
+  phase2: {
+    timeline: '6个月',
+    goals: [
+      'AI功能增强',
+      '移动端适配',
+      '团队协作功能',
+      '付费版本上线'
+    ]
+  },
+
+  phase3: {
+    timeline: '12个月',
+    goals: [
+      '企业级功能',
+      'API生态建设',
+      '行业解决方案',
+      '国际化扩展'
+    ]
+  }
+};
+```
+
+---
+
+## 📝 总结
+
+这份产品需求文档为"运营效率助手"提供了完整的设计方案，包含：
+
+### 🎯 核心特色
+- **零门槛使用**：无需注册，打开即用
+- **运营专属**：针对运营工作场景深度定制
+- **能力提升**：不仅是工具，更是成长平台
+- **Apple美学**：简洁优雅的用户界面
+
+### 🏗️ 技术架构
+- **前端**：Vue 3 + TypeScript + Vite
+- **存储**：IndexedDB + LocalStorage
+- **样式**：CSS3 + 设计系统
+- **部署**：PWA + 静态托管
+
+### 📊 功能模块
+1. **工作概览**：数据可视化和智能洞察
+2. **工作记录**：实时记录和自动分类
+3. **任务管理**：智能拆解和进度跟踪
+4. **项目框架**：模板库和思维训练
+5. **每日学习**：知识推送和技能提升
+6. **个人设置**：个性化配置和数据管理
+
+### 💡 创新亮点
+- AI智能分类和时间预估
+- 框架思维训练系统
+- 个性化学习推荐
+- 无服务器架构设计
+- 渐进式Web应用
+
+这个产品将帮助运营人员建立更好的工作习惯，提升专业能力，最终实现个人和职业的双重成长。
